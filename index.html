@@ -1480,8 +1480,14 @@ function applyDraft(ctx, rec) {
   if (rec.ai.result) setModal({title: '초안으로 다시 만들까요?', danger: true, confirmLabel: '덮어쓰기', body: html`<p>지금 리포트와 가이드의 내용(Claude 결과와 직접 고친 내용)이 입력 메모 기준 초안으로 바뀝니다.</p>`, onConfirm: run});
   else run();
 }
+function isTemplate(d) { const r = (d && d.report) || {}; const sx = v => typeof v === 'string' ? v : Array.isArray(v) ? sx(v[0]) : ''; return sx(r.day).startsWith('어린이집에서의 하루: 등원 모습') || sx(r.story).includes('실제 관찰 사례 중심 문단') || sx(r.closing).startsWith('교사의 따뜻한 마무리 글'); }
 function extractJSON(text) {
-  let t = String(text || '').replace(/```json/gi, '```');
+  const raw = String(text || '');
+  const ECHO = '당신은 어린이집 학부모 상담자료를 정리하는';
+  if (raw.includes(ECHO) && raw.includes('# 입력 자료') && !raw.split('# 입력 자료').pop().includes('"report"')) return {ok: false, error: '요청문이 그대로 붙여넣어졌어요. 이 칸에는 요청문이 아니라 AI(Claude, ChatGPT 등)가 보내 준 답변을 붙여넣어 주세요.'};
+  let t = raw.replace(/```json/gi, '```');
+  const blocks = [...t.matchAll(/```\s*([\s\S]*?)```/g)].map(m => m[1]).filter(b => b.includes('"report"') || b.includes('"guide"'));
+  if (blocks.length) t = blocks[blocks.length - 1];
   const f = t.indexOf('{'), l = t.lastIndexOf('}');
   if (f < 0 || l <= f) return {ok: false, error: 'JSON({ })를 찾지 못했어요. Claude의 답변 전체를 그대로 붙여넣었는지 확인해 주세요.'};
   t = t.slice(f, l + 1);
@@ -1489,7 +1495,7 @@ function extractJSON(text) {
   /* 문자열 안의 실제 줄바꿈·탭을 JSON이 읽을 수 있게 고침 */
   const fix = x => { let o = '', q = false, e = false; for (const ch of x) { if (q) { if (e) { o += ch; e = false; } else if (ch === '\\') { o += ch; e = true; } else if (ch === '"') { o += ch; q = false; } else if (ch === '\n') o += '\\n'; else if (ch === '\r') o += ''; else if (ch === '\t') o += ' '; else o += ch; } else { if (ch === '"') q = true; o += ch; } } return o; };
   tries.push(fix(tries[1]), fix(tries[2]));
-  for (const s of tries) { try { return {ok: true, data: JSON.parse(s)}; } catch (e) { /* 다음 방법 */ } }
+  for (const s of tries) { try { const data = JSON.parse(s); if (isTemplate(data)) return {ok: false, error: '요청문 안의 예시 양식이 그대로 들어왔어요. AI가 써 준 답변이 아니에요. 요청문을 AI에 붙여넣어 받은 답변을 붙여넣어 주세요.'}; return {ok: true, data}; } catch (e) { /* 다음 방법 */ } }
   return {ok: false, error: 'JSON 형식을 읽지 못했어요. 답변이 중간에 끊기지 않았는지 확인하고, 끊겼다면 Claude에 "이어서 JSON을 끝까지 출력해 주세요"라고 요청해 주세요.'};
 }
 function normalizeAI(j) {
