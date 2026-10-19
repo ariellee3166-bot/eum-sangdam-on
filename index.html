@@ -298,6 +298,7 @@ textarea.code{font-family:ui-monospace,Consolas,monospace;font-size:12px;min-hei
 .g-ck input{accent-color:var(--paper-sage-deep);margin-top:4px}
 .g-ph{color:var(--paper-muted);font-style:italic}
 .cautionhint{color:var(--warn)!important}
+.btn.big{padding:14px 26px;font-size:16px}
 .page.tight{padding-top:28px;padding-bottom:28px;line-height:1.55}
 .page.tight .rp-title{margin-bottom:4px}
 .page.tight h4,.page.tight .rp-sec{margin-top:8px}
@@ -444,6 +445,7 @@ const STEPS = [
   {n:2,key:'obs',title:'교사 관찰기록',sub:'7개 영역 · 모두 선택 입력'},
   {n:3,key:'safety',title:'안전하고 건강한 어린이집 생활을 위해',sub:'선택 입력',optional:true},
   {n:4,key:'questions',title:'부모님이 궁금해하시는 이야기',sub:'질문별 답변·전달 방식'},
+  {n:5,key:'ai',title:'AI 정리',sub:'리포트·가이드 만들기',optional:true},
 ];
 
 const CAUTION = [
@@ -552,6 +554,7 @@ function stepProgress(rec, key){
   return {filled:0,total:0};
 }
 function stepState(rec, step){
+  if(step.key==='ai') return rec.ai.result ? {cls:'full',label:'만들어짐'} : {cls:'',label:'아직 만들지 않음'};
   const p=stepProgress(rec, step.key);
   if(step.key==='questions'){ if(!p.total) return {cls:'',label:'질문 없음'}; return p.filled===p.total? {cls:'full',label:`질문 ${p.total}개 준비`} : {cls:'part',label:`답변 준비 필요 ${p.total-p.filled}`}; }
   if(step.key==='obs'){ if(!p.filled) return {cls:'',label:'미작성'}; return {cls: p.filled>=8?'full':'part', label:`메모 ${p.filled}개${p.extra?` · 일화 ${p.extra}`:''}`}; }
@@ -907,7 +910,7 @@ function Dashboard({ctx}){
       <ol style=${{margin:'8px 0 0',paddingLeft:'20px',display:'grid',gap:'3px'}}>
         <li>이 주소를 Ctrl+D로 즐겨찾기에 추가해 두세요. 상단에서 교사와 학기를 고르고 영유아를 등록하거나 "자료 열기"를 눌러요.</li>
         <li>상담자료 작성에서 기본정보, 교사 관찰기록, 안전·건강, 부모님 질문을 입력해요. 모든 내용은 자동 임시 저장되고, Ctrl+S로도 저장돼요.</li>
-        <li>자료 분석에서 점검 결과를 보고 Claude용 요청문을 복사해 Claude에 붙여넣어요.</li>
+        <li>마지막 "AI 정리" 단계에서 Claude용 요청문을 복사해 붙여넣거나, AI 없이 초안을 바로 만들어요.</li>
         <li>Claude의 답변을 붙여넣어 반영하면 리포트 편집·상담 가이드가 채워져요.</li>
         <li>문장을 고치고 "교사 검토·승인"을 체크한 뒤 인쇄(PDF 저장)해요.</li>
         <li>상담을 마치면 상담 후 기록에 실제 내용을 적고, 저장 및 출력에서 JSON 파일로 백업해요.</li>
@@ -988,7 +991,7 @@ function WriteView({ctx}){
       <div className="navbtns" style=${{marginTop:'20px'}}>
         <button className="btn" disabled=${step===1} onClick=${()=>go(step-1)}><${Icon} n="arrowL"/>이전 단계</button>
         ${step<STEPS.length? html`<button className="btn primary" onClick=${()=>go(step+1)}>다음: ${STEPS[step].title}<${Icon} n="arrowR"/></button>`
-                : html`<button className="btn primary" onClick=${()=>ctx.setView('analysis')}>입력 점검하기<${Icon} n="arrowR"/></button>`}
+                : html`<button className="btn primary" onClick=${()=>ctx.setView('report')}>다음 → 리포트 미리보기·저장<${Icon} n="arrowR"/></button>`}
       </div>
     </section>
     <${SidePanel} ctx=${ctx} rec=${cur} go=${go}/>
@@ -1001,6 +1004,7 @@ const STEP_DESC = {
   growth:'이전 학기 자료가 없다면 현재 관찰 중심으로 작성합니다.',
   safety:'선택 입력입니다. 비워 두면 학부모용 성장 리포트에서 자동으로 생략됩니다.',
   focus:'상담 전에 꼭 전달하고 싶은 내용을 정리합니다.',
+  ai:'입력한 내용으로 학부모용 리포트와 교사용 상담 가이드 초안을 만듭니다.',
   questions:'부모님이 설문에 적은 질문을 그대로 옮기고, 질문마다 답변과 전달 방식을 정해 주세요.',
   photos:'학부모용 성장 리포트에 들어갈 사진은 최대 2장입니다. 사진이 없으면 사진틀은 인쇄되지 않습니다.',
   concern:'입력 과정의 마지막 단계입니다. 부모님의 양육 고민과 교사의 지원 방향을 정리하고 부모교육자료 생성 여부를 정합니다.',
@@ -1263,7 +1267,22 @@ function Step9({ctx,rec}){
     </div>
   </div>`;
 }
-const STEP_COMP={basic:Step1,survey:Step2,obs:Step3,growth:Step4,safety:Step5,focus:Step6,questions:Step7,photos:Step8,concern:Step9};
+const STEP_COMP={ai:StepAI,basic:Step1,survey:Step2,obs:Step3,growth:Step4,safety:Step5,focus:Step6,questions:Step7,photos:Step8,concern:Step9};
+
+function StepAI({ctx, rec}) {
+  const [open, setOpen] = useState(false);
+  const res = rec.ai.result; const nm = has(rec.basic.name) ? rec.basic.name : '우리 아이';
+  return html`<div className="stack">
+    <div className="notice sage"><${Icon} n="leaf"/><div>지금까지 입력한 관찰기록, 안전·건강 내용, 부모님 질문을 모아 학부모용 리포트와 교사용 상담 가이드 초안을 만들어요. 만든 뒤에는 자유롭게 고칠 수 있어요.</div></div>
+    ${res && html`<div className="notice"><${Icon} n="check"/><div style=${{flex:1}}>이미 초안이 만들어져 있어요. (${fmtDateTime(rec.ai.appliedAt)}) 다시 만들면 직접 고친 내용이 바뀌니 주의해 주세요.</div><button className="btn sm primary" onClick=${() => ctx.setView('report')}>리포트 보기</button></div>`}
+    <div className="card" style=${{display:'grid',justifyItems:'center',gap:'10px',padding:'28px 16px',textAlign:'center'}}>
+      <button className="btn primary big" onClick=${() => setOpen(!open)}>무료로 ${nm}의 상담자료 만들기 (Claude)</button>
+      <p className="muted small">Claude.ai(무료)에 붙여넣을 내용을 만들어 드려요. 답을 받아서 다시 붙여넣으면 적용돼요.</p>
+      <button className="btn big" onClick=${() => applyDraft(ctx, rec)}>AI 없이, 내가 적은 내용으로만 초안 만들기</button>
+    </div>
+    ${open && html`<${AIPanel} key=${rec.id} ctx=${ctx} rec=${rec} noDraft=${true}/>`}
+  </div>`;
+}
 
 /* ───────── 자료 분석 (1차: 입력 점검) ───────── */
 function AnalysisView({ctx}){
@@ -1460,7 +1479,7 @@ function aiWarnings(rec, res) {
   return w;
 }
 
-function AIPanel({ctx, rec}) {
+function AIPanel({ctx, rec, noDraft}) {
   const {updateRecord, setModal, say, setView} = ctx;
   const prompt = useMemo(() => buildPrompt(rec), [rec]);
   const [paste, setPaste] = useState(rec.ai.raw || '');
@@ -1481,8 +1500,8 @@ function AIPanel({ctx, rec}) {
   };
   const clear = () => setModal({title: '반영된 결과를 지울까요?', danger: true, confirmLabel: '지우기', body: html`<p>리포트와 가이드의 Claude 작성 내용과 수정 내용이 지워집니다. 입력한 상담자료는 그대로 남아요.</p>`, onConfirm: () => { updateRecord(rec.id, r => ({...r, ai: {...emptyAI(), raw: r.ai.raw}})); say('결과를 지웠어요.'); }});
   return html`<div className="stack">
-    <div className="card stack"><div><h3>Claude 없이 바로 초안 만들기</h3><p className="muted small">입력한 메모를 문장으로 이어 붙여 리포트·가이드 초안을 바로 만듭니다. 입력하지 않은 내용은 비워 두고, 문장은 직접 고칠 수 있어요. 더 매끄러운 문장이 필요하면 아래 Claude 방식을 쓰세요.</p></div>
-      <div><button className="btn primary" onClick=${() => applyDraft(ctx, rec)}><${Icon} n="doc"/>입력 내용으로 초안 만들기</button></div></div>
+    ${!noDraft && html`<div className="card stack"><div><h3>Claude 없이 바로 초안 만들기</h3><p className="muted small">입력한 메모를 문장으로 이어 붙여 리포트·가이드 초안을 바로 만듭니다. 입력하지 않은 내용은 비워 두고, 문장은 직접 고칠 수 있어요. 더 매끄러운 문장이 필요하면 아래 Claude 방식을 쓰세요.</p></div>
+      <div><button className="btn primary" onClick=${() => applyDraft(ctx, rec)}><${Icon} n="doc"/>입력 내용으로 초안 만들기</button></div></div>`}
     <div className="card stack">
       <div><h3>① Claude용 작성 요청문</h3>
         <p className="muted small">입력한 상담자료로 만든 요청문입니다. 복사해서 Claude 대화창에 붙여넣으면 JSON 형식으로 결과를 받을 수 있어요. 이 프로그램은 Claude를 직접 호출하지 않으며, 입력하지 않은 내용은 만들지 않도록 지시가 들어 있습니다.</p></div>
