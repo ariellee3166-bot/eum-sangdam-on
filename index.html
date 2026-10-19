@@ -1,0 +1,1949 @@
+<title>이음 상담ON</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<style>
+/* Layout: 상단 메뉴 + (왼쪽 단계 · 가운데 입력 · 오른쪽 상태) 3단 작업 화면, 태블릿에서 2단, 좁은 화면에서 1단 */
+:root{
+  --bg:#FBF8F1;        /* 아이보리 */
+  --surface:#FFFDF9;
+  --surface-2:#F5EFE3; /* 따뜻한 베이지 */
+  --line:#E7DECD;
+  --ink:#38392F;
+  --muted:#77746A;
+  --sage:#7F9C7B;      /* 세이지 그린 */
+  --sage-deep:#557052;
+  --sage-soft:#E8EFE3;
+  --apricot:#EDB892;   /* 살구 */
+  --apricot-soft:#FBEBDD;
+  --warn:#B4692F;
+  --warn-soft:#FBEADB;
+  --danger:#B24A3F;
+  --danger-soft:#F8E1DD;
+  --ok:#4F7A4B;
+  --info-soft:#EAF0F2;
+  --shadow:0 1px 2px rgba(80,70,40,.06),0 4px 14px rgba(80,70,40,.06);
+  --font-display:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --font-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  --r-lg:18px; --r-md:12px; --r-sm:8px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1E201B;--surface:#272A24;--surface-2:#30332B;--line:#3D4137;--ink:#ECE8DD;--muted:#A9A597;
+  --sage:#98B593;--sage-deep:#B8D0B2;--sage-soft:#2E3A2C;--apricot:#D9A07A;--apricot-soft:#3E3026;
+  --warn:#E3A06B;--warn-soft:#3E3024;--danger:#E58A7F;--danger-soft:#422A27;--ok:#9CC797;--info-soft:#28323A;
+  --shadow:0 1px 2px rgba(0,0,0,.3);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1E201B;--surface:#272A24;--surface-2:#30332B;--line:#3D4137;--ink:#ECE8DD;--muted:#A9A597;
+  --sage:#98B593;--sage-deep:#B8D0B2;--sage-soft:#2E3A2C;--apricot:#D9A07A;--apricot-soft:#3E3026;
+  --warn:#E3A06B;--warn-soft:#3E3024;--danger:#E58A7F;--danger-soft:#422A27;--ok:#9CC797;--info-soft:#28323A;
+  --shadow:0 1px 2px rgba(0,0,0,.3);color-scheme:dark}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.6;word-break:keep-all;overflow-wrap:anywhere}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:400;margin:0;text-wrap:balance;line-height:1.35}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--sage-deep);outline-offset:2px}
+.wrap{max-width:1440px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* top bar */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--bg);border-bottom:1px solid var(--line)}
+.brandrow{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-block:12px 8px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;margin-right:auto}
+.brand svg{flex:none}
+.brand h1{font-size:23px;color:var(--sage-deep);letter-spacing:-.01em}
+.brand .slogan{font-size:12.5px;color:var(--muted)}
+.ctxbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ctxbar label{font-size:12px;color:var(--muted)}
+.ctxbar select{padding:5px 8px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface)}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:12.5px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.chip.ok{background:var(--sage-soft);color:var(--ok)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.danger{background:var(--danger-soft);color:var(--danger)}
+.chip.apricot{background:var(--apricot-soft);color:var(--warn)}
+.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:thin;padding-bottom:0}
+.tab{border:0;background:none;padding:9px 14px 10px;border-bottom:2.5px solid transparent;color:var(--muted);cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px;font-size:14.5px}
+.tab:hover{color:var(--ink)}
+.tab[aria-current="page"]{color:var(--sage-deep);border-bottom-color:var(--sage);font-weight:600}
+.tab .soon{font-size:10.5px;padding:0 6px;border-radius:999px;background:var(--surface-2);color:var(--muted);font-weight:400}
+
+main{padding-block:22px 60px}
+.pagehead{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.pagehead h2{font-size:26px}
+.pagehead p{color:var(--muted);font-size:14px}
+.pagehead .grow{flex:1;min-width:240px;display:grid;gap:4px}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;box-shadow:var(--shadow);min-width:0}
+.card h3{font-size:18.5px;margin-bottom:10px}
+.card + .card{margin-top:16px}
+.stack{display:grid;gap:16px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:14px;white-space:nowrap;transition:background .15s}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--sage-deep);border-color:var(--sage-deep);color:var(--bg)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.soft{background:var(--sage-soft);border-color:transparent;color:var(--sage-deep)}
+.btn.danger{color:var(--danger);border-color:var(--danger-soft)}
+.btn.danger.solid{background:var(--danger);color:var(--bg);border-color:var(--danger)}
+.btn.sm{padding:4px 10px;font-size:13px}
+.btn.icon{padding:6px;border-radius:50%}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* notices */
+.notice{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:var(--r-md);background:var(--info-soft);font-size:13.5px}
+.notice.warn{background:var(--warn-soft)}
+.notice.apricot{background:var(--apricot-soft)}
+.notice.sage{background:var(--sage-soft)}
+.notice svg{flex:none;margin-top:2px}
+.notice b{font-weight:600}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 16px;display:grid;gap:2px}
+.stat .k{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.stat .v{font-family:var(--font-display);font-size:30px;font-variant-numeric:tabular-nums;line-height:1.2}
+.stat .v small{font-size:14px;color:var(--muted);margin-left:2px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex:none}
+
+/* table */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:760px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-weight:500;color:var(--muted);font-size:12.5px;background:var(--surface-2);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.namecell{display:flex;align-items:center;gap:8px;font-weight:500}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--sage-soft);color:var(--sage-deep);display:grid;place-items:center;font-size:13px;flex:none;font-family:var(--font-display)}
+.tag-sample{font-size:11px;padding:0 6px;border-radius:6px;background:var(--apricot-soft);color:var(--warn);font-weight:400}
+
+/* status pill */
+.status{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.st-draft{background:var(--apricot-soft);color:var(--warn)}
+.st-done{background:var(--info-soft);color:var(--ink)}
+.st-reviewed{background:var(--sage-soft);color:var(--sage-deep)}
+.st-counseled{background:var(--sage-deep);color:var(--bg)}
+
+/* write layout */
+.write{display:grid;grid-template-columns:236px minmax(0,1fr) 292px;gap:20px;align-items:start}
+.steps{position:sticky;top:calc(env(safe-area-inset-top,0px) + 112px);display:grid;gap:4px;padding:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg)}
+.steps .who{padding:4px 6px 10px;border-bottom:1px dashed var(--line);margin-bottom:6px}
+.steps .who b{font-family:var(--font-display);font-weight:400;font-size:17px;display:block}
+.stepbtn{display:grid;grid-template-columns:26px minmax(0,1fr);gap:8px;align-items:center;text-align:left;border:0;background:none;padding:7px 8px;border-radius:var(--r-sm);cursor:pointer;width:100%}
+.stepbtn:hover{background:var(--surface-2)}
+.stepbtn[aria-current="step"]{background:var(--sage-soft)}
+.stepbtn .n{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12px;background:var(--surface-2);color:var(--muted);font-variant-numeric:tabular-nums}
+.stepbtn.full .n{background:var(--sage);color:var(--bg)}
+.stepbtn.part .n{background:var(--apricot-soft);color:var(--warn)}
+.stepbtn[aria-current="step"] .n{outline:2px solid var(--sage-deep);outline-offset:1px}
+.stepbtn .t{font-size:13.5px;line-height:1.35;display:grid}
+.stepbtn .t small{font-size:11.5px;color:var(--muted)}
+.side{position:sticky;top:calc(env(safe-area-inset-top,0px) + 112px);display:grid;gap:12px}
+.side .card{padding:16px}
+.side .card + .card{margin-top:0}
+.side h4{font-size:15.5px;margin-bottom:8px}
+.bar{height:8px;border-radius:999px;background:var(--surface-2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--sage);border-radius:999px;transition:width .3s}
+.plist{display:grid;gap:6px;font-size:13px;margin:0;padding:0;list-style:none}
+.plist li{display:flex;gap:8px;align-items:flex-start}
+.plist .pg{flex:none;font-size:11px;padding:1px 6px;border-radius:6px;background:var(--surface-2);color:var(--muted);font-variant-numeric:tabular-nums;margin-top:1px}
+.plist .off{color:var(--muted);text-decoration:line-through}
+.navbtns{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap}
+
+.stephead{display:flex;gap:14px;align-items:flex-start;margin-bottom:16px}
+.stephead .big{font-family:var(--font-display);font-size:15px;color:var(--sage-deep);background:var(--sage-soft);border-radius:var(--r-md);padding:6px 10px;flex:none}
+.stephead h2{font-size:24px}
+.stephead p{color:var(--muted);font-size:14px;margin-top:2px}
+
+/* form */
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 18px}
+.span2{grid-column:span 2}
+.field{display:grid;gap:5px;min-width:0}
+.field > label,.lbl{font-size:13.5px;font-weight:500}
+.field .hint{font-size:12.5px;color:var(--muted);margin-top:-3px}
+input[type=text],input[type=date],input[type=time],input[type=number],select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--bg);transition:border-color .15s,background .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--sage);background:var(--surface);outline:none;box-shadow:0 0 0 3px var(--sage-soft)}
+textarea{resize:vertical;min-height:62px;field-sizing:content;max-height:420px;line-height:1.55}
+textarea.filled,input.filled{background:var(--surface)}
+.qnum{font-family:var(--font-display);color:var(--sage-deep);margin-right:4px}
+.choice{display:flex;gap:8px;flex-wrap:wrap}
+.choice label{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;cursor:pointer;font-size:13.5px;background:var(--bg)}
+.choice label:has(input:checked){background:var(--sage-soft);border-color:var(--sage);color:var(--sage-deep);font-weight:500}
+.choice input{accent-color:var(--sage-deep);margin:0}
+.computed{padding:9px 11px;border-radius:var(--r-sm);background:var(--sage-soft);color:var(--sage-deep);font-size:14px}
+
+/* domain blocks */
+.domain{border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface)}
+.domain + .domain{margin-top:12px}
+.domain > summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:13px 16px}
+.domain > summary::-webkit-details-marker{display:none}
+.domain > summary h3{font-size:17px;margin:0}
+.domain > summary .chev{margin-left:auto;transition:transform .2s;color:var(--muted)}
+.domain[open] > summary .chev{transform:rotate(180deg)}
+.domain .body{padding:0 16px 16px;display:grid;gap:12px}
+.mark{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--apricot-soft);color:var(--warn);font-size:12px;font-family:var(--font-display);flex:none}
+.episode{border:1px dashed var(--line);border-radius:var(--r-md);padding:12px;display:grid;gap:10px;background:var(--bg)}
+.episode .eh{display:flex;align-items:center;gap:8px}
+
+.qcard{border:1px solid var(--line);border-radius:var(--r-md);padding:14px;background:var(--surface);display:grid;gap:12px}
+.qcard .qh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.qcard .qh b{font-family:var(--font-display);font-weight:400;font-size:16px;color:var(--sage-deep)}
+.qcard .tools{margin-left:auto;display:flex;gap:4px}
+
+/* photos */
+.photos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.pslot{border:1px solid var(--line);border-radius:var(--r-md);padding:14px;background:var(--surface);display:grid;gap:12px;min-width:0}
+.frame{position:relative;width:100%;max-width:100%;overflow:hidden;border-radius:var(--r-md);background:var(--surface-2);border:1px solid var(--line)}
+.frame img{width:100%;height:100%;display:block;max-width:none}
+.frame.empty{display:grid;place-items:center;color:var(--muted);font-size:13px;text-align:center;padding:12px;border-style:dashed}
+.range{display:grid;grid-template-columns:72px minmax(0,1fr) 44px;gap:8px;align-items:center;font-size:13px}
+.range input{accent-color:var(--sage-deep);width:100%}
+
+/* help */
+.help{border-radius:var(--r-md);background:var(--surface-2);padding:12px 14px;font-size:13.5px}
+.help summary{cursor:pointer;font-weight:500}
+.help .cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:10px}
+.help ul{margin:4px 0 0;padding-left:18px;display:grid;gap:3px}
+.help .no li::marker{color:var(--danger)}
+.help .yes li::marker{color:var(--sage-deep)}
+
+/* modal & toast */
+.backdrop{position:fixed;inset:0;background:rgba(30,28,20,.42);z-index:60;display:grid;place-items:center;padding:16px}
+.modal{background:var(--surface);border-radius:var(--r-lg);max-width:520px;width:100%;padding:22px;display:grid;gap:14px;box-shadow:0 10px 40px rgba(0,0,0,.25);max-height:90vh;overflow:auto}
+.modal h3{font-size:20px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:70;background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:14px;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
+.empty-state{display:grid;justify-items:center;text-align:center;gap:10px;padding:36px 16px;color:var(--muted)}
+.empty-state h3{color:var(--ink)}
+.feat td:first-child{font-weight:500}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13.5px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0}
+.checklist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.checklist li{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:var(--r-md);background:var(--bg);border:1px solid var(--line)}
+.checklist .ic{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center}
+.checklist .ic.y{background:var(--sage-soft);color:var(--ok)}
+.checklist .ic.n{background:var(--warn-soft);color:var(--warn)}
+.checklist .ic.q{background:var(--surface-2);color:var(--muted)}
+textarea.code{font-family:ui-monospace,Consolas,monospace;font-size:12px;min-height:160px;field-sizing:fixed}
+
+/* ── A4 문서 (종이는 테마와 무관하게 밝게 유지) ── */
+:root{--paper:#FFFEFA;--paper-ink:#34362C;--paper-line:#E5DCC8;--paper-sage:#6F8D6B;--paper-sage-deep:#4B6648;--paper-sage-soft:#EAF0E4;--paper-apricot:#F2C9A6;--paper-apricot-soft:#FBEBDD;--paper-muted:#7B7868;--paper-danger:#A94A3D;--paper-danger-soft:#F8E4DF}
+.docs{display:grid;gap:26px;justify-items:start;overflow-x:auto;padding:4px 2px 14px;max-width:100%}
+.pagebox{display:grid;gap:6px;justify-items:start}
+.pagebar{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.page{width:794px;height:1123px;flex:none;background:var(--paper);color:var(--paper-ink);padding:44px 48px;box-shadow:0 2px 14px rgba(60,50,20,.18);border:1px solid var(--paper-line);position:relative;font-size:13px;line-height:1.7;word-break:keep-all;overflow-wrap:anywhere}
+.page.over{outline:3px solid var(--danger)}
+.page .flow{display:flow-root}
+.page h2,.page h3,.page h4{font-family:var(--font-display);font-weight:400;color:var(--paper-ink)}
+.ed{outline:none;white-space:pre-wrap;border-radius:5px;transition:background .15s;min-width:2em}
+.ed:hover{background:rgba(111,141,107,.13)}
+.ed:focus{background:rgba(242,201,166,.3)}
+.ed:empty:before{content:attr(data-ph);color:var(--paper-muted);opacity:.75}
+.blk{position:relative}
+.delx{position:absolute;top:-2px;right:-2px;width:20px;height:20px;border-radius:50%;border:0;background:var(--paper-danger);color:#fff;font-size:13px;line-height:1;cursor:pointer;display:none;padding:0}
+.blk:hover>.delx{display:block}
+.addx{border:1px dashed var(--paper-sage);background:none;color:var(--paper-sage-deep);border-radius:999px;font-size:12px;padding:1px 10px;cursor:pointer;margin-top:4px}
+.rp-top{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--paper-sage-deep)}
+.rp-title{font-size:30px!important;color:var(--paper-sage-deep)!important;margin:2px 0 10px;line-height:1.3}
+.rp h4,.rp-sec{font-size:16px;color:var(--paper-sage-deep)!important;border-bottom:1.5px dotted var(--paper-apricot);padding-bottom:3px;margin:14px 0 7px}
+.rp-cols{display:flex;gap:18px;align-items:flex-start}
+.rp-left{flex:1;min-width:0}
+.rp-info{display:grid;grid-template-columns:auto 1fr;gap:2px 14px;margin:0 0 4px;padding:10px 14px;background:var(--paper-sage-soft);border-radius:12px}
+.rp-info dt{color:var(--paper-muted)}
+.rp-info dd{margin:0;font-weight:500}
+.rphoto{margin:0;display:grid;gap:4px;justify-items:center;flex:none;max-width:48%}
+.rframe{overflow:hidden;border-radius:14px;border:1px solid var(--paper-line);background:#f3eee2;max-width:100%}
+.rphoto figcaption{font-size:11.5px;color:var(--paper-muted);text-align:center}
+.rp-p{margin:0}
+.rp-list{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+.rp-strengths{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.rp-card{background:var(--paper-apricot-soft);border-radius:12px;padding:9px 12px;position:relative}
+.rp-card b{font-family:var(--font-display);font-weight:400;font-size:14.5px;color:var(--paper-sage-deep);display:block}
+.rp-domain{display:grid;grid-template-columns:86px minmax(0,1fr);gap:10px;padding:6px 0;border-bottom:1px solid var(--paper-line);position:relative}
+.rp-domain b{font-family:var(--font-display);font-weight:400;color:var(--paper-sage-deep)}
+.rp-safe{background:var(--paper-apricot-soft);border-radius:12px;padding:10px 14px;margin-top:10px}
+.rp-safe h4{border:0!important;margin:0 0 4px!important}
+.rp-qa{display:grid;gap:7px}
+.rp-qa .q{font-size:12px;color:var(--paper-muted)}
+.rp-close{margin-top:14px;padding:12px 16px;border-radius:14px;background:var(--paper-sage-soft)}
+.rp-sign{text-align:right;margin-top:6px;color:var(--paper-sage-deep);font-family:var(--font-display)}
+.rp-ul{margin:0;padding-left:20px;display:grid;gap:5px}
+.rp-ol{margin:0;padding-left:20px;display:grid;gap:5px}
+.rp-say{background:var(--paper-sage-soft);border-radius:10px;padding:6px 12px;list-style:none;margin-left:-20px}
+.g-banner{display:flex;gap:8px;align-items:center;padding:6px 12px;border-radius:10px;background:var(--paper-danger-soft);color:var(--paper-danger);font-size:12px;font-weight:600;margin-bottom:8px}
+.g-title{font-size:22px!important;color:var(--paper-sage-deep)!important;margin:0 0 6px}
+.page.guide{font-size:12px;line-height:1.55;padding:36px 42px}
+.gs{margin-top:9px}
+.gs h4{font-size:14px;color:var(--paper-sage-deep)!important;display:flex;align-items:center;gap:6px;margin:0 0 3px}
+.gn{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--paper-sage);color:#fff;font-size:11px;font-family:var(--font-body)}
+.g-kv{display:grid;grid-template-columns:repeat(4,auto 1fr);gap:1px 8px;font-size:12px}
+.g-kv dt{color:var(--paper-muted)}.g-kv dd{margin:0;font-weight:500}
+.g-ul{margin:0;padding-left:16px;display:grid;gap:2px}
+.g-tag{display:inline-block;font-size:10.5px;padding:0 7px;border-radius:999px;background:var(--paper-sage-soft);color:var(--paper-sage-deep);white-space:nowrap}
+.g-tag.warn{background:var(--paper-apricot-soft);color:#9a5a24}
+.g-tag.red{background:var(--paper-danger-soft);color:var(--paper-danger)}
+.g-q{padding:5px 9px;border-radius:9px;background:var(--paper-sage-soft);margin-bottom:5px}
+.g-q .a{margin-top:1px}
+.g-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g-box{border:1px solid var(--paper-line);border-radius:9px;padding:5px 9px}
+.g-sc{display:grid;grid-template-columns:54px minmax(0,1fr);gap:2px 8px;padding:3px 0;border-bottom:1px dotted var(--paper-line);position:relative}
+.g-sc .t{color:var(--paper-sage-deep);font-weight:600;font-size:11.5px}
+.g-ck{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:2px 12px}
+.g-ck label{display:flex;gap:6px;align-items:flex-start;cursor:pointer}
+.g-ck input{accent-color:var(--paper-sage-deep);margin-top:4px}
+.g-ph{color:var(--paper-muted);font-style:italic}
+.cautionhint{color:var(--warn)!important}
+.page.tight{padding-top:28px;padding-bottom:28px;line-height:1.55}
+.page.tight .rp-title{margin-bottom:4px}
+.page.tight h4,.page.tight .rp-sec{margin-top:8px}
+.page.tight .gs{margin-top:5px}
+.page.tight .rp-close{margin-top:8px;padding:8px 14px}
+.page.tight .rp-domain{padding:3px 0}
+.page.tight .af-row{padding:3px 0}
+.page.tight .rp-list,.page.tight .rp-ul,.page.tight .rp-ol{gap:3px}
+.af-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.af-row{display:grid;grid-template-columns:116px minmax(0,1fr);gap:8px;padding:5px 0;border-bottom:1px solid var(--paper-line);align-items:start}
+.af-l{font-weight:600;color:var(--paper-sage-deep);font-size:11.5px}
+.af-sign{display:flex;gap:8px;align-items:baseline;font-family:var(--font-display);font-size:15px}
+.af-sign span{font-family:var(--font-body);font-size:11px;color:var(--paper-muted)}
+@media print{
+  @page{size:A4;margin:0}
+  html,body{background:#fff!important}
+  .noprint,.topbar{display:none!important}
+  main,.wrap{padding:0!important;max-width:none!important;margin:0!important}
+  .docs{display:block;overflow:visible;padding:0}
+  .pagebox{display:block}
+  .page{box-shadow:none;border:0;outline:0!important;width:210mm;height:297mm;margin:0;break-after:page;page-break-after:always;overflow:visible}
+  .page.over{height:auto;min-height:297mm}
+  .rp-card,.rp-domain,.g-q,.g-sc,.rphoto,.rp-safe,.rp-close,.af-row{break-inside:avoid;page-break-inside:avoid}
+  .pagebox:last-child .page{break-after:auto;page-break-after:auto}
+  .ed:hover,.ed:focus{background:none}
+  .ed:empty:before{content:none}
+  .delx,.addx{display:none!important}
+  html[data-print="edu"] .pg-main{display:none!important}
+  .printroot > :not(.docs){display:none!important}
+  main > .notice{display:none!important}
+  .blank{color:transparent!important}
+  .page{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+@media (max-width:1180px){
+  .write{grid-template-columns:220px minmax(0,1fr)}
+  .side{grid-column:1/-1;position:static;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+}
+@media (max-width:780px){
+  .write{grid-template-columns:minmax(0,1fr)}
+  .steps{position:static;display:flex;overflow-x:auto;gap:6px}
+  .steps .who{display:none}
+  .stepbtn{width:auto;flex:none;grid-template-columns:26px auto}
+  .stepbtn .t small{display:none}
+  .grid2,.grid3,.photos,.help .cols{grid-template-columns:minmax(0,1fr)}
+  .span2{grid-column:auto}
+  .brand .slogan{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/htm@3.1.1/dist/htm.umd.js"></script>
+<script>
+(function(){
+'use strict';
+const {useState,useEffect,useMemo,useRef,useCallback} = React;
+const html = htm.bind(React.createElement);
+
+/* ───────── 상수 ───────── */
+const LS_KEY = 'eum-sangdam-on:v1';
+const PH_PREFIX = 'eum-sangdam-on:photo:';
+const APP_ID = 'eum-sangdam-on';
+const ORG = '이음어린이집';
+
+const STATUS = [
+  ['draft','자료 작성 중'],
+  ['done','자료 작성 완료'],
+  ['reviewed','교사 검토 완료'],
+  ['counseled','상담 완료'],
+];
+const STATUS_LABEL = Object.fromEntries(STATUS);
+
+const SURVEY = [
+  ['growth','지난 학기 이후 달라진 점과 성장했다고 느끼는 부분'],
+  ['home','가정에서의 생활과 변화'],
+  ['play','요즘 관심 있어 하는 놀이와 활동'],
+  ['together','부모님과 함께하는 활동'],
+  ['eating','식습관과 식사 태도'],
+  ['sleep','수면 및 낮잠 습관'],
+  ['toilet','배변 및 기본생활습관'],
+  ['physical','신체 발달에 대한 부모님의 생각'],
+  ['language','언어 및 인지 발달에 대한 부모님의 생각'],
+  ['social','사회 및 정서 발달에 대한 부모님의 생각'],
+  ['hope','앞으로 경험하거나 성장하기를 바라는 점'],
+  ['request','담임교사와 상담하고 싶은 내용'],
+];
+
+const OBS = [
+  {key:'habit', title:'기본생활습관', items:[['meal','식사'],['nap','낮잠'],['toilet','배변'],['hygiene','위생'],['daily','정리 및 일상생활']]},
+  {key:'body', title:'신체운동', items:[['gross','대근육'],['fine','소근육'],['control','신체 조절'],['move','이동 및 신체활동']]},
+  {key:'comm', title:'의사소통', items:[['understand','언어 이해'],['express','언어 표현'],['gesture','몸짓과 비언어적 표현'],['teacher','교사와의 상호작용']]},
+  {key:'social', title:'사회관계', items:[['teacher','교사와의 관계'],['peerInterest','또래에 대한 관심'],['peerPlay','또래와의 놀이'],['emotion','감정 표현']]},
+  {key:'art', title:'예술경험', items:[['music','음악과 율동'],['artSense','미술과 감각 놀이'],['imitate','모방과 표현']]},
+  {key:'nature', title:'자연탐구', items:[['explore','주변 환경 탐색'],['curious','사물에 대한 호기심'],['repeat','반복적인 시도'],['cause','원인과 결과에 대한 관심']]},
+  {key:'play', title:'놀이 특성', items:[['toys','좋아하는 놀잇감'],['often','자주 선택하는 놀이'],['focus','놀이 집중'],['newPlay','새로운 놀이에 대한 반응']]},
+];
+
+const GROWTH = [
+  ['prev','지난 학기 모습','이전 학기 기록이 없다면 비워 두셔도 됩니다. 현재 관찰 중심으로 작성됩니다.'],
+  ['now','현재 모습',''],
+  ['newChange','새롭게 나타난 변화',''],
+  ['grown','성장한 부분',''],
+  ['support','앞으로 지원하고 싶은 부분',''],
+];
+
+const SAFETY_AREAS = ['또래와의 안전한 상호작용','감정 표현과 조절','건강한 기본생활습관','안전한 놀이와 이동','기타'];
+const SAFETY_Q = [
+  ['situation','어떤 상황에서 나타났나요?','예: 자유놀이 시간, 좋아하는 자동차 놀잇감을 친구가 먼저 잡았을 때'],
+  ['behavior','실제 관찰한 행동은 무엇인가요?','원인 추측이나 성격 표현 없이, 본 그대로 적어 주세요.'],
+  ['frequency','빈도와 최근 변화는 어떤가요?','예: 10월 둘째 주 3회 → 넷째 주 1회'],
+  ['support','교사는 어떻게 지원하고 있나요?',''],
+  ['response','지원 이후 아이의 반응은 어떤가요?',''],
+  ['home','가정과 함께 실천하면 좋은 방법은 무엇인가요?',''],
+];
+
+const FOCUS = [
+  ['biggest','아이의 가장 큰 성장 변화'],
+  ['mustTell','부모님께 꼭 전달하고 싶은 모습'],
+  ['emphasize','상담에서 강조할 내용'],
+  ['check','추가로 확인하고 싶은 사항'],
+  ['together','가정과 함께 지원하고 싶은 부분'],
+];
+
+const Q_MODES = [
+  ['talk','상담할 때 말로 설명하기','상담 가이드에만 표시 · 리포트에는 넣지 않아요'],
+  ['report','성장 리포트에 반영하기','리포트 관련 영역에 반영 · 상담 가이드에도 보관'],
+  ['both','성장 리포트와 상담에서 모두 다루기','리포트 반영 + 상담 가이드 표시'],
+];
+
+const CONCERN_TOPICS = ['감정 표현과 떼쓰기','수면 및 생활습관','식습관과 편식','언어 및 의사소통','또래 관계와 사회성','배변 및 위생습관','기타 양육 고민'];
+const CONCERN_Q = [
+  ['observed','교사가 관찰한 관련 모습','실제 어린이집에서 관찰한 내용만 적어 주세요.'],
+  ['suggest','교사가 제안하고 싶은 양육 지원 방법',''],
+  ['home','가정과 함께 실천하면 좋은 방법','일상에서 바로 해 볼 수 있는 방법이면 좋아요.'],
+  ['include','부모교육자료에 포함하고 싶은 내용','특별히 강조하고 싶은 내용을 자유롭게 적어 주세요.'],
+];
+
+const STEPS = [
+  {n:1,key:'basic',title:'영유아 기본정보',sub:'이름·월령·상담 일정'},
+  {n:2,key:'obs',title:'교사 관찰기록',sub:'7개 영역 · 모두 선택 입력'},
+  {n:3,key:'safety',title:'안전하고 건강한 어린이집 생활을 위해',sub:'선택 입력',optional:true},
+  {n:4,key:'questions',title:'부모님이 궁금해하시는 이야기',sub:'질문별 답변·전달 방식'},
+];
+
+const CAUTION = [
+  ['문제가 많','관찰한 상황과 행동을 구체적으로 적어 보세요.'],
+  ['문제행동','"안전하고 건강한 어린이집 생활" 같은 표현을 권장해요.'],
+  ['고집','"원하는 활동을 계속하고 싶을 때 울음이나 몸짓으로 마음을 표현해요"처럼 바꿔 보세요.'],
+  ['어울리지 못','"친구의 놀이를 먼저 관찰한 뒤 다가가요"처럼 실제 모습을 적어 보세요.'],
+  ['집중력이 없','"관심 있는 활동은 반복 탐색하며, 전환할 때 안내가 필요해요"처럼 적어 보세요.'],
+  ['지도해 주세요','"가정에서도 비슷한 표현을 사용해 주시면 도움이 될 수 있어요"처럼 함께하는 표현을 권장해요.'],
+  ['지도 부탁','부모님께 일방적으로 요청하기보다 함께 지원하는 표현을 권장해요.'],
+  ['산만','관찰한 상황과 행동 중심으로 적어 보세요.'],
+  ['공격적','실제 행동(예: 놀잇감을 잡아당겼어요)을 구체적으로 적어 보세요.'],
+  ['예민','성격을 단정하기보다 상황과 반응을 적어 보세요.'],
+  ['발달 지연','교사는 발달을 진단하지 않아요. 관찰 사실 중심으로 적어 주세요.'],
+  ['발달이 늦','발달 상태를 판단하는 표현 대신 관찰 사실을 적어 주세요.'],
+  ['다른 친구들보다','다른 아이와 비교하는 표현은 피해 주세요.'],
+  ['또래보다','다른 아이와 비교하는 표현은 피해 주세요.'],
+  ['성격이','아이의 성격을 단정하는 표현은 피해 주세요.'],
+];
+
+/* ───────── 유틸 ───────── */
+const uid = (p='id') => p + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const nowISO = () => new Date().toISOString();
+const has = v => typeof v === 'string' ? v.trim().length > 0 : Array.isArray(v) ? v.length > 0 : !!v;
+const todayStr = () => { const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+function defaultTerm(){ const d=new Date(); const m=d.getMonth()+1; if(m>=3&&m<=8) return {year:d.getFullYear(),semester:1}; if(m>=9) return {year:d.getFullYear(),semester:2}; return {year:d.getFullYear()-1,semester:2}; }
+function termLabel(y,s){ return `${y}학년도 ${s}학기`; }
+function nextTerm(y,s){ return s===1?{year:y,semester:2}:{year:y+1,semester:1}; }
+function ageInfo(birth, ref){
+  if(!birth) return null;
+  const b=new Date(birth+'T00:00:00'); const r= ref? new Date(ref+'T00:00:00') : new Date();
+  if(isNaN(b)||isNaN(r)) return null;
+  let m=(r.getFullYear()-b.getFullYear())*12+(r.getMonth()-b.getMonth());
+  if(r.getDate()<b.getDate()) m--;
+  if(m<0) return null;
+  return {months:m, years:Math.floor(m/12)};
+}
+function ageText(rec){ const a=ageInfo(rec.basic.birth, rec.basic.date||null); return a? `${a.months}개월` : '—'; }
+function fmtDate(s){ if(!s) return '—'; const [y,m,d]=s.split('-'); return `${Number(m)}월 ${Number(d)}일`; }
+function fmtTime(iso){ if(!iso) return ''; const d=new Date(iso); return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0'); }
+function fmtDateTime(iso){ if(!iso) return '—'; const d=new Date(iso); return `${d.getMonth()+1}/${d.getDate()} ${fmtTime(iso)}`; }
+function setIn(obj, path, val){
+  const [k,...rest]=path; const base = obj ?? (typeof k==='number'?[]:{});
+  const copy = Array.isArray(base)? base.slice() : {...base};
+  copy[k] = rest.length ? setIn(base[k], rest, val) : val;
+  return copy;
+}
+const getIn = (obj,path) => path.reduce((o,k)=> o==null?undefined:o[k], obj);
+const displayName = rec => has(rec.basic.name)? rec.basic.name : '(이름 미입력)';
+const inIframe = (()=>{ try{ return window.self!==window.top; }catch(e){ return true; } })();
+
+function emptyObs(){ const o={}; OBS.forEach(d=>{ o[d.key]={}; d.items.forEach(([k])=>o[d.key][k]=''); }); o._ep={}; OBS.forEach(d=>o._ep[d.key]=[]); return o; }
+function emptyPhoto(){ return {src:null,caption:'',fit:'contain',ratio:'orig',x:50,y:50,zoom:100,w:0,h:0,missing:false,notStored:false}; }
+function emptyAI(){ return {raw:'',result:null,appliedAt:null,approved:{report:false,guide:false,after:false},titles:{p1:'우리 아이 성장 이야기',p2:'함께 자라는 우리 아이',p3:'함께하는 부모교육'},check:{},tight:{}}; }
+function emptyAfter(){ return {date:'',time:'',method:'',content:'',qa:{},opinion:'',guided:'',concern:'',support:'',eduProvided:'',eduTitle:'',followup:'',teacherName:''}; }
+function emptyRecord(session, teachers){
+  const t = teachers.find(t=>t.id===session.teacherId);
+  return {
+    id:uid('rec'), childKey:uid('child'), sample:false, prevId:null,
+    teacherId: t? t.id : null,
+    basic:{name:'',birth:'',className: t? t.className:'',teacher: t? t.name:'',year:session.year,semester:session.semester,date:'',time:'',method:''},
+    status:'draft',
+    survey:Object.fromEntries(SURVEY.map(([k])=>[k,''])),
+    obs:emptyObs(),
+    growth:Object.fromEntries(GROWTH.map(([k])=>[k,''])),
+    safety:{areas:[],areaEtc:'',important:false, ...Object.fromEntries(SAFETY_Q.map(([k])=>[k,'']))},
+    focus:Object.fromEntries(FOCUS.map(([k])=>[k,''])),
+    questions:[],
+    photos:{main:emptyPhoto(), play:emptyPhoto()},
+    concern:{text:'',topics:[],topicEtc:'',observed:'',suggest:'',home:'',include:'',generate:''},
+    ai:emptyAI(), after:emptyAfter(),
+    createdAt:nowISO(), updatedAt:nowISO(),
+  };
+}
+/* 이전 버전/불러온 자료의 빈 칸을 기본 구조로 채움 */
+function normalizeRecord(r){
+  const base = emptyRecord({teacherId:null,year:r?.basic?.year||defaultTerm().year,semester:r?.basic?.semester||defaultTerm().semester},[]);
+  const out = {...base, ...r};
+  ['basic','survey','growth','safety','focus','concern'].forEach(k=> out[k]={...base[k], ...(r[k]||{})});
+  out.obs = {...base.obs, ...(r.obs||{})};
+  OBS.forEach(d=>{ out.obs[d.key]={...base.obs[d.key], ...((r.obs||{})[d.key]||{})}; });
+  out.obs._ep = {...base.obs._ep, ...((r.obs||{})._ep||{})};
+  out.photos = {main:{...emptyPhoto(), ...((r.photos||{}).main||{})}, play:{...emptyPhoto(), ...((r.photos||{}).play||{})}};
+  out.questions = Array.isArray(r.questions)? r.questions.map(q=>({id:q.id||uid('q'),q:q.q||'',a:q.a||'',mode:q.mode||''})) : [];
+  out.after={...emptyAfter(),...(r.after||{}),qa:{...((r.after||{}).qa||{})}};
+  const ba=emptyAI(), ra=r.ai||{};
+  out.ai={...ba,...ra,approved:{...ba.approved,...(ra.approved||{})},titles:{...ba.titles,...(ra.titles||{})},check:{...(ra.check||{})},tight:{...(ra.tight||{})}};
+  out.basic.year = Number(out.basic.year)||base.basic.year;
+  out.basic.semester = Number(out.basic.semester)||base.basic.semester;
+  return out;
+}
+
+/* ───────── 진행률 ───────── */
+function stepProgress(rec, key){
+  switch(key){
+    case 'basic': { const b=rec.basic; const ks=['name','birth','className','teacher','date','time','method']; return {filled:ks.filter(k=>has(b[k])).length,total:ks.length}; }
+    case 'survey': return {filled:SURVEY.filter(([k])=>has(rec.survey[k])).length,total:SURVEY.length};
+    case 'obs': { let t=0,f=0; OBS.forEach(d=>d.items.forEach(([k])=>{t++; if(has(rec.obs[d.key][k])) f++;})); const ep=OBS.reduce((s,d)=>s+(rec.obs._ep[d.key]||[]).length,0); return {filled:f,total:t,extra:ep}; }
+    case 'growth': { const ks=GROWTH.map(g=>g[0]).filter(k=>k!=='prev'); return {filled:ks.filter(k=>has(rec.growth[k])).length + (has(rec.growth.prev)?1:0), total:GROWTH.length}; }
+    case 'safety': { const s=rec.safety; const f=(s.areas.length?1:0)+SAFETY_Q.filter(([k])=>has(s[k])).length; return {filled:f,total:SAFETY_Q.length+1}; }
+    case 'focus': return {filled:FOCUS.filter(([k])=>has(rec.focus[k])).length,total:FOCUS.length};
+    case 'questions': { const qs=rec.questions; if(!qs.length) return {filled:0,total:0}; const f=qs.filter(q=>has(q.q)&&has(q.a)&&q.mode).length; return {filled:f,total:qs.length}; }
+    case 'photos': { const f=['main','play'].filter(s=>rec.photos[s].src).length; return {filled:f,total:2}; }
+    case 'concern': { const c=rec.concern; const ks=['text','observed','suggest','home','include']; const f=ks.filter(k=>has(c[k])).length+(c.topics.length?1:0)+(c.generate?1:0); return {filled:f,total:7}; }
+  }
+  return {filled:0,total:0};
+}
+function stepState(rec, step){
+  const p=stepProgress(rec, step.key);
+  if(step.key==='questions'){ if(!p.total) return {cls:'',label:'질문 없음'}; return p.filled===p.total? {cls:'full',label:`질문 ${p.total}개 준비`} : {cls:'part',label:`답변 준비 필요 ${p.total-p.filled}`}; }
+  if(step.key==='obs'){ if(!p.filled) return {cls:'',label:'미작성'}; return {cls: p.filled>=8?'full':'part', label:`메모 ${p.filled}개${p.extra?` · 일화 ${p.extra}`:''}`}; }
+  if(!p.filled) return {cls:'', label: step.optional? '선택 · 비어 있음' : '미작성'};
+  if(p.filled>=p.total) return {cls:'full',label:'입력 완료'};
+  return {cls:'part',label:`${p.filled}/${p.total} 입력`};
+}
+function overallProgress(rec){
+  const req=STEPS.filter(s=>!s.optional);
+  let done=0;
+  req.forEach(s=>{ const p=stepProgress(rec,s.key); if(s.key==='obs') done+= Math.min(1,p.filled/8); else if(s.key==='questions') done+= p.total? p.filled/p.total : 1; else done+= p.total? p.filled/p.total : 0; });
+  return Math.round(done/req.length*100);
+}
+const safetyFilled = rec => rec.safety.areas.length>0 || SAFETY_Q.some(([k])=>has(rec.safety[k]));
+
+function cautionHits(rec){
+  const spots=[];
+  OBS.forEach(d=>{ d.items.forEach(([k,l])=>spots.push([`관찰 · ${d.title} · ${l}`, rec.obs[d.key][k]])); (rec.obs._ep[d.key]||[]).forEach((e,i)=>['situation','behavior','support','response'].forEach(f=>spots.push([`관찰 일화 · ${d.title} ${i+1}`, e[f]]))); });
+  GROWTH.forEach(([k,l])=>spots.push([`성장 · ${l}`, rec.growth[k]]));
+  SAFETY_Q.forEach(([k,l])=>spots.push([`안전·건강 · ${l}`, rec.safety[k]]));
+  FOCUS.forEach(([k,l])=>spots.push([`핵심 주제 · ${l}`, rec.focus[k]]));
+  rec.questions.forEach((q,i)=>spots.push([`질문 ${i+1} 답변`, q.a]));
+  CONCERN_Q.forEach(([k,l])=>spots.push([`양육 고민 · ${l}`, rec.concern[k]]));
+  const hits=[];
+  spots.forEach(([where,text])=>{ if(!has(text)) return; CAUTION.forEach(([p,tip])=>{ if(text.includes(p)) hits.push({where,phrase:p,tip}); }); });
+  return hits;
+}
+
+/* ───────── 예시 자료 ───────── */
+function seedDB(){
+  const term=defaultTerm();
+  const teachers=[{id:'t_sample1',name:'김하늘',className:'새싹반'},{id:'t_sample2',name:'박소담',className:'햇살반'}];
+  const session={teacherId:'t_sample1',year:term.year,semester:term.semester,onlyMine:false};
+  const a=emptyRecord(session,teachers);
+  a.sample=true;
+  Object.assign(a.basic,{name:'예시 하준',birth:`${term.year-2}-09-12`,date:`${term.year}-11-10`,time:'15:30',method:'방문'});
+  Object.assign(a.survey,{growth:'말로 표현하는 단어가 많이 늘었어요. "엄마 이거", "더 줘"처럼 두 단어를 이어서 말해요.',play:'자동차 굴리기, 블록 쌓았다가 무너뜨리기를 좋아해요.',eating:'좋아하는 반찬만 먼저 먹으려고 해요. 채소는 손으로 밀어내요.',sleep:'밤 9시쯤 자고 중간에 한 번 깨요.',social:'놀이터에서 형, 누나들을 따라가려고 해요.',hope:'친구들과 함께 노는 경험이 늘었으면 좋겠어요.'});
+  Object.assign(a.obs.habit,{meal:'숟가락을 스스로 쥐고 밥을 떠먹으려 시도함. 시금치나물은 손으로 집어 냄새를 맡은 뒤 내려놓음.',nap:'토끼 애착인형을 안고 15분 안에 잠듦. 약 1시간 30분 잠.'});
+  Object.assign(a.obs.body,{gross:'미끄럼틀 계단을 난간을 잡고 혼자 올라감.',fine:'큰 블록 4~5개를 쌓음.'});
+  Object.assign(a.obs.comm,{express:'"선생님 이거", "차 가" 등 두 단어 조합 표현이 늘어남.'});
+  Object.assign(a.obs.social,{peerInterest:'친구가 자동차를 굴리면 옆에 다가가 바라보다가 같은 자동차를 찾아 굴림.'});
+  Object.assign(a.obs.play,{toys:'자동차, 큰 블록',focus:'자동차 경사로 놀이에서 10분 넘게 반복함.'});
+  a.obs._ep.social=[{id:uid('ep'),date:`${term.year}-10-14`,situation:'자유놀이, 경사로 놀이 영역',behavior:'친구가 굴린 자동차가 내려오자 손뼉을 치며 "또!"라고 말함.',support:'교사가 "친구 자동차가 쭉 내려왔네"라고 말로 이어 줌.',response:'친구 쪽으로 자기 자동차를 내밀며 함께 굴림.'}];
+  Object.assign(a.growth,{prev:'새로운 놀잇감 앞에서 교사 곁에 머무는 시간이 길었음.',now:'관심 있는 놀이 영역에 스스로 찾아가 놀이를 시작함.',grown:'두 단어 표현, 계단 오르기'});
+  Object.assign(a.safety,{areas:['또래와의 안전한 상호작용'],situation:'좋아하는 자동차를 친구가 먼저 잡았을 때',behavior:'친구 손에 든 자동차를 잡아당김. 10월 중 4회 관찰.',frequency:'10월 둘째 주 3회 → 넷째 주 1회로 줄어듦.',support:'"하준이도 자동차 갖고 싶었구나" 마음을 읽어 준 뒤 "차례"라는 말과 손짓을 함께 알려 줌. 같은 자동차를 2개 비치함.',response:'최근에는 교사를 보며 "차례?"라고 묻는 모습이 나타남.'});
+  Object.assign(a.focus,{biggest:'두 단어로 원하는 것을 말로 표현하기 시작함',mustTell:'친구 놀이를 지켜본 뒤 같은 놀이로 함께하는 모습',check:'가정에서 채소를 어떤 방식으로 접하고 있는지'});
+  a.questions=[
+    {id:uid('q'),q:'집에서는 채소를 안 먹는데 어린이집에서는 어떤가요?',a:'채소를 손으로 집어 냄새를 맡아 보는 모습이 있어요. 아직 입에 넣는 경우는 적지만 탐색하는 시간이 늘고 있어요.',mode:'report'},
+    {id:uid('q'),q:'친구들과 다투지는 않나요?',a:'좋아하는 자동차를 두고 잡아당기는 일이 10월에 몇 번 있었고, "차례"를 함께 연습하면서 줄어들고 있어요.',mode:'both'},
+    {id:uid('q'),q:'낮잠은 몇 시간 정도 자나요?',a:'',mode:'talk'},
+  ];
+  Object.assign(a.concern,{text:'채소를 거의 먹지 않아 식사 시간마다 실랑이가 생겨요.',topics:['식습관과 편식'],observed:'채소를 손으로 만지고 냄새 맡는 탐색은 함.',home:'채소를 놀이 재료로 먼저 만나 보기(씻기, 찢기)',generate:'yes'});
+
+  const b=emptyRecord({teacherId:'t_sample2',year:term.year,semester:term.semester},teachers);
+  b.sample=true; b.status='reviewed';
+  Object.assign(b.basic,{name:'예시 서아',birth:`${term.year-3}-05-03`,date:`${term.year}-11-12`,time:'10:00',method:'전화'});
+  Object.assign(b.survey,{growth:'혼자 옷을 입으려고 해요.',language:'문장으로 이야기해요.'});
+  Object.assign(b.obs.comm,{express:'"내가 할래요", "이거 뭐예요?" 등 문장으로 표현함.'});
+  b.questions=[{id:uid('q'),q:'한글에 관심이 있는데 어린이집에서도 하나요?',a:'그림책을 보며 자기 이름 첫 글자를 찾는 모습이 있어요.',mode:'talk'}];
+  b.concern.generate='no';
+  return {app:APP_ID,version:1,teachers,session,records:[a,b],lastExportAt:null,savedAt:null,noticeDismissed:false};
+}
+
+/* ───────── 저장소 ───────── */
+const photoSig = {}; // 이미 저장한 사진은 다시 쓰지 않음
+function loadDB(){
+  try{
+    const raw=localStorage.getItem(LS_KEY);
+    if(raw){
+      const d=JSON.parse(raw);
+      d.records=(d.records||[]).map(r=>{
+        const rec=normalizeRecord(r);
+        ['main','play'].forEach(s=>{ const p=rec.photos[s]; if(p.stored){ let src=null; try{ src=localStorage.getItem(PH_PREFIX+rec.id+':'+s); }catch(e){} if(src){ p.src=src; photoSig[rec.id+':'+s]=src.length+src.slice(-24); } else { p.missing=true; } delete p.stored; } });
+        return rec;
+      });
+      d.teachers=d.teachers||[]; d.session={...defaultTerm(),teacherId:null,onlyMine:false,...(d.session||{})};
+      return {db:d,fresh:false};
+    }
+  }catch(e){}
+  return {db:seedDB(),fresh:true};
+}
+function persist(db){
+  const errors=[];
+  const lite={...db, records: db.records.map(r=>({...r, photos:Object.fromEntries(['main','play'].map(s=>{ const p=r.photos[s]; return [s,{...p, src:null, stored:!!p.src}]; }))}))};
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(lite)); }catch(e){ return {ok:false, errors:['기본 자료']}; }
+  const keep=new Set();
+  db.records.forEach(r=>['main','play'].forEach(s=>{
+    const p=r.photos[s]; if(!p.src) return;
+    const key=r.id+':'+s; keep.add(PH_PREFIX+key);
+    const sig=p.src.length+p.src.slice(-24);
+    if(photoSig[key]===sig) return;
+    try{ localStorage.setItem(PH_PREFIX+key,p.src); photoSig[key]=sig; }catch(e){ errors.push(key); }
+  }));
+  try{ const rm=[]; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.startsWith(PH_PREFIX)&&!keep.has(k)) rm.push(k); } rm.forEach(k=>{ localStorage.removeItem(k); delete photoSig[k.slice(PH_PREFIX.length)]; }); }catch(e){}
+  return {ok:true, photoErrors:errors};
+}
+function downloadText(name, text){
+  try{ const blob=new Blob([text],{type:'application/json;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),3000); return true; }catch(e){ return false; }
+}
+async function copyText(text, fallbackEl){
+  try{ await navigator.clipboard.writeText(text); return true; }catch(e){ if(fallbackEl){ fallbackEl.focus(); fallbackEl.select(); } return false; }
+}
+function readImage(file){
+  return new Promise((res,rej)=>{
+    const fr=new FileReader();
+    fr.onload=()=>{ const img=new Image(); img.onload=()=>{ const max=1600; const s=Math.min(1,max/Math.max(img.width,img.height)); const c=document.createElement('canvas'); c.width=Math.round(img.width*s); c.height=Math.round(img.height*s); const ctx=c.getContext('2d'); ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,c.width,c.height); ctx.drawImage(img,0,0,c.width,c.height); res({src:c.toDataURL('image/jpeg',0.85),w:c.width,h:c.height}); }; img.onerror=()=>rej(new Error('img')); img.src=fr.result; };
+    fr.onerror=()=>rej(new Error('read')); fr.readAsDataURL(file);
+  });
+}
+
+/* ───────── 아이콘 ───────── */
+const IC = {
+  dash:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
+  child:'M12 9a3.2 3.2 0 1 0 0-6.4A3.2 3.2 0 0 0 12 9zM5 21v-1.5a7 7 0 0 1 14 0V21',
+  pencil:'M4 20h4L19 9l-4-4L4 16zM14 6l4 4',
+  chart:'M5 20V11M11 20V5M17 20v-6M3 20h18',
+  doc:'M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h5',
+  chat:'M4 5h16v11H10l-5 4v-4H4z',
+  note:'M6 4h12v16H6zM9 9h6M9 13h6M9 17h3',
+  save:'M5 4h11l3 3v13H5zM8 4v5h7V4M8 20v-6h8v6',
+  plus:'M12 5v14M5 12h14',
+  trash:'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13',
+  up:'M6 15l6-6 6 6', down:'M6 9l6 6 6-6',
+  photo:'M3 6h18v14H3zM3 16l5-5 4 4 3-3 6 6M15.5 8.8a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4z',
+  copy:'M9 9h11v11H9zM5 15V4h11',
+  upload:'M12 16V4M7 9l5-5 5 5M4 20h16',
+  download:'M12 4v12M7 11l5 5 5-5M4 20h16',
+  x:'M6 6l12 12M18 6L6 18',
+  check:'M5 12.5l4.5 4.5L19 7',
+  alert:'M12 3.5l9.5 16.5h-19zM12 10v4.5M12 17.2v.3',
+  info:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 11v6M12 7.5v.3',
+  arrowR:'M5 12h14M13 6l6 6-6 6', arrowL:'M19 12H5M11 6l-6 6 6 6',
+  user:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0',
+  leaf:'M5 19C5 10 11 5 20 4c-1 9-6 15-15 15zM5 19l8-8',
+  print:'M7 9V3h10v6M7 17H4v-7h16v7h-3M7 14h10v7H7z',
+  refresh:'M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7',
+  chev:'M6 9l6 6 6-6',
+};
+function Icon({n,size=16}){ return html`<svg width=${size} height=${size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d=${IC[n]}/></svg>`; }
+function Sprig({size=40}){
+  return html`<svg width=${size} height=${size} viewBox="0 0 64 64" aria-hidden="true">
+    <path d="M30 60 C31 46 29 32 33 16" fill="none" stroke="var(--sage-deep)" strokeWidth="2.2" strokeLinecap="round"/>
+    <path d="M31 44 C21 43 14 36 13 28 C23 28 30 34 31 44Z" fill="var(--sage)"/>
+    <path d="M32 33 C41 31 47 25 48 17 C39 18 33 24 32 33Z" fill="var(--sage)" opacity=".7"/>
+    <path d="M30 52 C38 51 43 47 45 41 C37 41 32 45 30 52Z" fill="var(--sage)" opacity=".5"/>
+    <g fill="var(--apricot)"><circle cx="33" cy="9" r="3.4"/><circle cx="38.5" cy="12" r="3.4"/><circle cx="27.5" cy="12" r="3.4"/><circle cx="30" cy="17" r="3.2"/><circle cx="36" cy="17" r="3.2"/></g>
+    <circle cx="33" cy="13" r="2.3" fill="var(--surface)"/>
+  </svg>`;
+}
+
+/* ───────── 공통 컴포넌트 ───────── */
+const TEACHER_FIELD=/^(o-|ep-|g-|sf-|f-|a-|c-(observed|suggest|home|include)|af-(content|guided|concern|support|follow))/;
+function Field({id,label,hint,value,onChange,rows=2,placeholder,type='textarea',num}){
+  const v=value||'';
+  const hit = type==='textarea' && has(v) && TEACHER_FIELD.test(id||'') ? CAUTION.find(([p])=>v.includes(p)) : null;
+  return html`<div className="field">
+    <label htmlFor=${id}>${num!=null && html`<span className="qnum">${num}.</span>`}${label}</label>
+    ${hint && html`<p className="hint">${hint}</p>`}
+    ${type==='textarea'
+      ? html`<textarea id=${id} rows=${rows} className=${has(v)?'filled':''} value=${v} placeholder=${placeholder||''} onChange=${e=>onChange(e.target.value)}></textarea>`
+      : html`<input id=${id} type=${type} className=${has(v)?'filled':''} value=${v} placeholder=${placeholder||''} onChange=${e=>onChange(e.target.value)}/>`}
+    ${hit && html`<p className="hint cautionhint"><b>"${hit[0]}"</b> 표현이 있어요. ${hit[1]}</p>`}
+  </div>`;
+}
+function StatusPill({s}){ return html`<span className=${'status st-'+s}>${STATUS_LABEL[s]||s}</span>`; }
+function Modal({m,close}){
+  if(!m) return null;
+  return html`<div className="backdrop" onClick=${e=>{ if(e.target===e.currentTarget) close(); }}>
+    <div className="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <h3 id="modal-title">${m.title}</h3>
+      <div className="small" style=${{display:'grid',gap:'8px'}}>${m.body}</div>
+      <div className="row" style=${{justifyContent:'flex-end'}}>
+        <button className="btn" onClick=${close}>${m.cancelLabel||'취소'}</button>
+        ${m.onConfirm && html`<button className=${'btn '+(m.danger?'danger solid':'primary')} onClick=${()=>{ m.onConfirm(); close(); }}>${m.confirmLabel||'확인'}</button>`}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ───────── 앱 ───────── */
+const MENUS = [
+  {key:'dash',label:'전체 현황',icon:'dash'},
+  {key:'children',label:'영유아 관리',icon:'child'},
+  {key:'write',label:'상담자료 작성',icon:'pencil'},
+  {key:'analysis',label:'자료 분석',icon:'chart'},
+  {key:'report',label:'리포트 편집',icon:'doc'},
+  {key:'guide',label:'상담 가이드',icon:'chat'},
+  {key:'save',label:'저장 및 출력',icon:'save'},
+];
+
+function App(){
+  const init = useMemo(loadDB,[]);
+  const [db,setDb] = useState(init.db);
+  const [view,setView] = useState('dash');
+  const [curId,setCurId] = useState(null);
+  const [step,setStep] = useState(1);
+  const [modal,setModal] = useState(null);
+  const [toast,setToast] = useState('');
+  const [saveState,setSaveState] = useState({at:init.fresh?null:init.db.savedAt, ok:true});
+  const toastT = useRef();
+
+  const say = useCallback(msg=>{ setToast(msg); clearTimeout(toastT.current); toastT.current=setTimeout(()=>setToast(''),2600); },[]);
+
+  /* 자동 임시 저장 */
+  const saveNow = useCallback((d)=>{
+    const stamped={...d, savedAt:nowISO()};
+    const r=persist(stamped);
+    if(!r.ok){ setSaveState({at:null,ok:false}); return false; }
+    setSaveState({at:stamped.savedAt,ok:true,photoErrors:r.photoErrors});
+    return true;
+  },[]);
+  const firstRun=useRef(true);
+  useEffect(()=>{
+    if(firstRun.current){ firstRun.current=false; return; }
+    const t=setTimeout(()=>saveNow(db),700);
+    return ()=>clearTimeout(t);
+  },[db,saveNow]);
+
+  useEffect(()=>{ const h=e=>{ if((e.ctrlKey||e.metaKey)&&String(e.key).toLowerCase()==='s'){ e.preventDefault(); say(saveNow(db)?'이 브라우저에 저장했어요.':'저장에 실패했어요. JSON 파일로 내보내 주세요.'); } }; window.addEventListener('keydown',h); return ()=>window.removeEventListener('keydown',h); },[db,saveNow,say]);
+
+  const unexported = useMemo(()=> db.records.filter(r=>!r.sample && (!db.lastExportAt || r.updatedAt>db.lastExportAt)).length,[db]);
+  useEffect(()=>{
+    const h=e=>{ if(unexported>0){ e.preventDefault(); e.returnValue=''; } };
+    window.addEventListener('beforeunload',h); return ()=>window.removeEventListener('beforeunload',h);
+  },[unexported]);
+
+  const updateRecord = useCallback((id, fn)=>{
+    setDb(d=>({...d, records:d.records.map(r=> r.id===id ? {...fn(r), updatedAt:nowISO()} : r)}));
+  },[]);
+  const setField = useCallback((id,path,val)=> updateRecord(id, r=>setIn(r,path,val)),[updateRecord]);
+
+  const cur = db.records.find(r=>r.id===curId) || null;
+  const openRecord = (id, s=1)=>{ setCurId(id); setStep(s); setView('write'); window.scrollTo({top:0}); };
+  const newRecord = ()=>{ const r=emptyRecord(db.session,db.teachers); setDb(d=>({...d,records:[...d.records,r]})); openRecord(r.id,1); say('새 영유아 자료를 만들었어요. 기본정보부터 입력해 주세요.'); };
+  const deleteRecord = (rec)=> setModal({title:'자료를 삭제할까요?',danger:true,confirmLabel:'삭제하기',
+    body:html`<p><b>${displayName(rec)}</b> · ${termLabel(rec.basic.year,rec.basic.semester)} 상담자료가 이 브라우저에서 삭제됩니다.</p><p className="muted">JSON 파일로 내보내 둔 자료는 파일에 그대로 남아 있습니다. 삭제 후에는 되돌릴 수 없습니다.</p>`,
+    onConfirm:()=>{ setDb(d=>({...d,records:d.records.filter(r=>r.id!==rec.id)})); if(curId===rec.id) setCurId(null); say('자료를 삭제했어요.'); }});
+  const copyToNext = (rec)=>{
+    const nt=nextTerm(rec.basic.year,rec.basic.semester);
+    const exists=db.records.find(r=>r.childKey===rec.childKey && r.basic.year===nt.year && r.basic.semester===nt.semester);
+    if(exists){ setModal({title:'이미 다음 학기 자료가 있어요',body:html`<p>${displayName(rec)}의 ${termLabel(nt.year,nt.semester)} 자료가 이미 있습니다.</p>`,cancelLabel:'닫기',confirmLabel:'그 자료 열기',onConfirm:()=>openRecord(exists.id)}); return; }
+    setModal({title:'다음 학기 자료를 만들까요?',confirmLabel:'만들기',
+      body:html`<p><b>${displayName(rec)}</b>의 ${termLabel(nt.year,nt.semester)} 자료를 새로 만듭니다.</p><ul style=${{margin:0,paddingLeft:'18px'}}><li>기본정보(이름, 생년월일, 반, 담당 교사)를 복사합니다.</li><li>이번 학기 STEP 4 "현재 모습"을 다음 학기 "지난 학기 모습"으로 옮겨 둡니다.</li><li>설문·관찰·질문·사진은 새 학기에 새로 입력합니다. 이전 기록은 그대로 보관됩니다.</li></ul>`,
+      onConfirm:()=>{
+        const r=emptyRecord(db.session,db.teachers);
+        r.childKey=rec.childKey; r.prevId=rec.id; r.teacherId=rec.teacherId;
+        r.basic={...r.basic,name:rec.basic.name,birth:rec.basic.birth,className:rec.basic.className,teacher:rec.basic.teacher,year:nt.year,semester:nt.semester};
+        r.growth.prev = rec.growth.now || '';
+        setDb(d=>({...d,records:[...d.records,r]}));
+        say(`${termLabel(nt.year,nt.semester)} 자료를 만들었어요. 상단 학기 선택을 바꾸면 목록에서 볼 수 있어요.`);
+      }});
+  };
+  const setSession = patch => setDb(d=>({...d,session:{...d.session,...patch}}));
+
+  const ctx = {db,setDb,cur,curId,setCurId,step,setStep,view,setView,openRecord,newRecord,deleteRecord,copyToNext,updateRecord,setField,setModal,say,saveNow,saveState,unexported,setSession};
+
+  return html`<div className="app">
+    <${TopBar} ctx=${ctx}/>
+    <main className="wrap">
+      ${!db.noticeDismissed && html`<div className="notice apricot" style=${{marginBottom:'16px'}}>
+        <${Icon} n="info"/>
+        <div style=${{flex:1}}><b>사용 전 확인해 주세요.</b> 자료는 이 기기의 이 브라우저에만 임시 저장됩니다. 교사 선택은 자료를 나눠 보는 기능일 뿐 로그인이나 접근 통제가 아니며, 다른 교사와 실시간으로 공유되지 않습니다. 실제 영유아 개인정보는 기관의 개인정보 처리 기준과 보호자 동의 여부를 확인한 뒤 입력해 주세요. 처음 보이는 <span className="tag-sample">예시</span> 자료는 사용 방법을 보여 주기 위한 가상의 자료입니다.</div>
+        <button className="btn sm" onClick=${()=>setDb(d=>({...d,noticeDismissed:true}))}>확인했어요</button>
+      </div>`}
+      ${view==='dash' && html`<${Dashboard} ctx=${ctx}/>`}
+      ${view==='children' && html`<${ChildrenView} ctx=${ctx}/>`}
+      ${view==='write' && html`<${WriteView} ctx=${ctx}/>`}
+      ${view==='analysis' && html`<${AnalysisView} ctx=${ctx}/>`}
+      ${view==='report' && html`<${ReportView} ctx=${ctx}/>`}
+      ${view==='guide' && html`<${GuideView} ctx=${ctx}/>`}
+      ${view==='after' && html`<${AfterView} ctx=${ctx}/>`}
+      ${view==='save' && html`<${SaveView} ctx=${ctx}/>`}
+    </main>
+    <${Modal} m=${modal} close=${()=>setModal(null)}/>
+    ${toast && html`<div className="toast" role="status">${toast}</div>`}
+  </div>`;
+}
+
+function TopBar({ctx}){
+  const {db,view,setView,setSession,saveState,unexported,setModal}=ctx;
+  const years=[...new Set([defaultTerm().year-1,defaultTerm().year,defaultTerm().year+1,...db.records.map(r=>r.basic.year)])].sort();
+  return html`<header className="topbar">
+    <div className="wrap">
+      <div className="brandrow">
+        <div className="brand"><${Sprig} size=${38}/><div><h1>이음 상담ON</h1><div className="slogan">아이의 성장을 잇고, 가정과 마음을 잇다 · ${ORG}</div></div></div>
+        <div className="ctxbar">
+          <label htmlFor="sel-teacher">교사</label>
+          <select id="sel-teacher" value=${db.session.teacherId||''} onChange=${e=>setSession({teacherId:e.target.value||null})}>
+            <option value="">선택 안 함</option>
+            ${db.teachers.map(t=>html`<option key=${t.id} value=${t.id}>${t.name} · ${t.className}</option>`)}
+          </select>
+          <button className="btn sm" onClick=${()=>setModal({title:'교사 및 담당 반',body:html`<${TeacherManager} ctx=${ctx}/>`,cancelLabel:'닫기'})}>관리</button>
+          <label htmlFor="sel-year">학기</label>
+          <select id="sel-year" value=${db.session.year} onChange=${e=>setSession({year:Number(e.target.value)})}>
+            ${years.map(y=>html`<option key=${y} value=${y}>${y}학년도</option>`)}
+          </select>
+          <select id="sel-sem" aria-label="학기" value=${db.session.semester} onChange=${e=>setSession({semester:Number(e.target.value)})}>
+            <option value=${1}>1학기</option><option value=${2}>2학기</option>
+          </select>
+          ${saveState.ok
+            ? html`<span className="chip ok" title="이 브라우저에 자동으로 임시 저장됩니다"><${Icon} n="check" size=${13}/>${saveState.at?`임시 저장 ${fmtTime(saveState.at)}`:'임시 저장 대기'}</span>`
+            : html`<span className="chip danger"><${Icon} n="alert" size=${13}/>브라우저 저장 실패</span>`}
+          ${unexported>0 && html`<button className="chip warn" style=${{border:0,cursor:'pointer'}} onClick=${()=>setView('save')} title="JSON 파일로 백업하지 않은 자료가 있어요"><${Icon} n="download" size=${13}/>파일 백업 필요 ${unexported}</button>`}
+        </div>
+      </div>
+      <nav className="tabs" aria-label="주 메뉴">
+        ${MENUS.map(m=>html`<button key=${m.key} className="tab" aria-current=${view===m.key?'page':undefined} onClick=${()=>{ setView(m.key); window.scrollTo({top:0}); }}><${Icon} n=${m.icon} size=${15}/>${m.label}${m.soon && html`<span className="soon">${m.soon}</span>`}</button>`)}
+      </nav>
+    </div>
+  </header>`;
+}
+
+function TeacherManager({ctx}){
+  const {db,setDb,say}=ctx;
+  const [name,setName]=useState(''); const [cls,setCls]=useState('');
+  const add=()=>{ if(!name.trim()){ say('교사 이름을 입력해 주세요.'); return; } const t={id:uid('t'),name:name.trim(),className:cls.trim()||'반 미지정'}; setDb(d=>({...d,teachers:[...d.teachers,t],session:{...d.session,teacherId:t.id}})); setName(''); setCls(''); say(`${t.name} 선생님을 추가했어요.`); };
+  return html`<div style=${{display:'grid',gap:'12px'}}>
+    <p className="muted">교사별로 자료를 나눠 보기 위한 목록입니다. 비밀번호나 로그인 기능이 아니므로 같은 브라우저를 쓰는 사람은 모든 자료를 볼 수 있습니다.</p>
+    <ul className="checklist">${db.teachers.length? db.teachers.map(t=>html`<li key=${t.id}><span className="avatar">${t.name.slice(0,1)}</span><div style=${{flex:1}}><b>${t.name}</b> <span className="muted">· ${t.className}</span><div className="muted small">작성 자료 ${db.records.filter(r=>r.teacherId===t.id).length}건</div></div>
+      <button className="btn sm danger" onClick=${()=>{ setDb(d=>({...d,teachers:d.teachers.filter(x=>x.id!==t.id),session:{...d.session,teacherId:d.session.teacherId===t.id?null:d.session.teacherId}})); say('목록에서 뺐어요. 작성한 자료는 그대로 남아 있어요.'); }}>목록에서 빼기</button></li>`) : html`<li className="muted">등록된 교사가 없어요.</li>`}</ul>
+    <div className="grid2">
+      <${Field} id="tm-name" type="text" label="교사 이름" value=${name} onChange=${setName}/>
+      <${Field} id="tm-class" type="text" label="담당 반" value=${cls} onChange=${setCls} placeholder="예: 새싹반(만 1세)"/>
+    </div>
+    <div><button className="btn primary" onClick=${add}><${Icon} n="plus"/>교사 추가</button></div>
+  </div>`;
+}
+
+/* ───────── 전체 현황 ───────── */
+function termRecords(db){
+  return db.records.filter(r=>r.basic.year===db.session.year && r.basic.semester===db.session.semester && (!db.session.onlyMine || !db.session.teacherId || r.teacherId===db.session.teacherId));
+}
+function Dashboard({ctx}){
+  const {db,newRecord,openRecord,setSession}=ctx;
+  const list=termRecords(db).slice().sort((a,b)=>(a.basic.date||'9999').localeCompare(b.basic.date||'9999'));
+  const count=s=>list.filter(r=>r.status===s).length;
+  const me=db.teachers.find(t=>t.id===db.session.teacherId);
+  const upcoming=list.filter(r=>r.status!=='counseled' && r.basic.date && r.basic.date>=todayStr()).slice(0,3);
+  return html`<div>
+    <div className="pagehead">
+      <div className="grow"><h2>${termLabel(db.session.year,db.session.semester)} 상담 현황</h2><p>${me?`${me.name} 선생님 · ${me.className}`:'교사를 선택하면 내 자료만 모아 볼 수 있어요.'}</p></div>
+      ${me && html`<label className="row small" style=${{gap:'6px'}}><input type="checkbox" id="only-mine" checked=${!!db.session.onlyMine} onChange=${e=>setSession({onlyMine:e.target.checked})} style=${{accentColor:'var(--sage-deep)'}}/>내 자료만 보기</label>`}
+      <button className="btn primary" onClick=${newRecord}><${Icon} n="plus"/>새 영유아 등록</button>
+    </div>
+    <div className="stats">
+      <div className="stat"><span className="k">상담 대상 영유아</span><span className="v">${list.length}<small>명</small></span></div>
+      <div className="stat"><span className="k"><i className="dot" style=${{background:'var(--apricot)'}}></i>자료 작성 중</span><span className="v">${count('draft')}</span></div>
+      <div className="stat"><span className="k"><i className="dot" style=${{background:'var(--muted)'}}></i>자료 작성 완료</span><span className="v">${count('done')}</span></div>
+      <div className="stat"><span className="k"><i className="dot" style=${{background:'var(--sage)'}}></i>교사 검토 완료</span><span className="v">${count('reviewed')}</span></div>
+      <div className="stat"><span className="k"><i className="dot" style=${{background:'var(--sage-deep)'}}></i>상담 완료</span><span className="v">${count('counseled')}</span></div>
+    </div>
+    <details className="help" style=${{marginBottom:'16px'}}><summary>사용 순서 한눈에 보기</summary>
+      <ol style=${{margin:'8px 0 0',paddingLeft:'20px',display:'grid',gap:'3px'}}>
+        <li>이 주소를 Ctrl+D로 즐겨찾기에 추가해 두세요. 상단에서 교사와 학기를 고르고 영유아를 등록하거나 "자료 열기"를 눌러요.</li>
+        <li>상담자료 작성에서 기본정보, 교사 관찰기록, 안전·건강, 부모님 질문을 입력해요. 모든 내용은 자동 임시 저장되고, Ctrl+S로도 저장돼요.</li>
+        <li>자료 분석에서 점검 결과를 보고 Claude용 요청문을 복사해 Claude에 붙여넣어요.</li>
+        <li>Claude의 답변을 붙여넣어 반영하면 리포트 편집·상담 가이드가 채워져요.</li>
+        <li>문장을 고치고 "교사 검토·승인"을 체크한 뒤 인쇄(PDF 저장)해요.</li>
+        <li>상담을 마치면 상담 후 기록에 실제 내용을 적고, 저장 및 출력에서 JSON 파일로 백업해요.</li>
+      </ol></details>
+    ${upcoming.length>0 && html`<div className="notice sage" style=${{marginBottom:'16px'}}><${Icon} n="leaf"/><div><b>다가오는 상담</b> · ${upcoming.map(r=>`${displayName(r)} ${fmtDate(r.basic.date)} ${r.basic.time||''}`).join(' / ')}</div></div>`}
+    ${list.length ? html`<${RecordTable} ctx=${ctx} list=${list}/>` : html`<div className="card empty-state"><${Sprig} size=${56}/><h3>이 학기에 등록된 영유아가 없어요</h3><p>새 영유아를 등록하거나, 영유아 관리에서 이전 학기 자료를 다음 학기로 복사해 시작할 수 있어요.</p><button className="btn primary" onClick=${newRecord}><${Icon} n="plus"/>새 영유아 등록</button></div>`}
+  </div>`;
+}
+function RecordTable({ctx,list,manage}){
+  const {openRecord,deleteRecord,copyToNext,updateRecord}=ctx;
+  return html`<div className="tablewrap"><table>
+    <thead><tr><th>이름(가명)</th>${manage&&html`<th>학기</th>`}<th>반</th><th>월령</th><th>담당 교사</th><th>상담 예정일</th><th>방법</th><th>작성률</th><th>진행 상태</th><th></th></tr></thead>
+    <tbody>${list.map(r=>{ const pct=overallProgress(r); const qNeed=r.questions.filter(q=>!has(q.a)).length; return html`<tr key=${r.id}>
+      <td><div className="namecell"><span className="avatar">${(r.basic.name.replace('예시 ','')||'?').slice(0,1)}</span><span>${displayName(r)}</span>${r.sample&&html`<span className="tag-sample">예시</span>`}</div>${qNeed>0&&html`<div className="small" style=${{color:'var(--warn)',marginLeft:'38px'}}>질문 답변 준비 필요 ${qNeed}</div>`}</td>
+      ${manage&&html`<td className="num">${r.basic.year} · ${r.basic.semester}학기</td>`}
+      <td>${r.basic.className||'—'}</td>
+      <td className="num">${ageText(r)}</td>
+      <td>${r.basic.teacher||'—'}</td>
+      <td className="num">${r.basic.date?`${fmtDate(r.basic.date)} ${r.basic.time||''}`:'—'}</td>
+      <td>${r.basic.method||'—'}</td>
+      <td className="num" style=${{minWidth:'92px'}}><div className="bar" title=${pct+'%'}><i style=${{width:pct+'%'}}></i></div><span className="small muted">${pct}%</span></td>
+      <td><select aria-label="진행 상태" value=${r.status} onChange=${e=>updateRecord(r.id,x=>({...x,status:e.target.value}))} style=${{width:'auto',padding:'4px 6px',fontSize:'13px'}}>${STATUS.map(([k,l])=>html`<option key=${k} value=${k}>${l}</option>`)}</select></td>
+      <td><div className="row" style=${{gap:'4px',flexWrap:'nowrap'}}>
+        <button className="btn sm soft" onClick=${()=>openRecord(r.id)}>자료 열기</button>
+        ${manage && html`<button className="btn sm" title="다음 학기 자료 만들기" onClick=${()=>copyToNext(r)}><${Icon} n="copy" size=${14}/>다음 학기</button>
+        <button className="btn sm icon danger" title="삭제" aria-label="삭제" onClick=${()=>deleteRecord(r)}><${Icon} n="trash" size=${14}/></button>`}
+      </div></td>
+    </tr>`; })}</tbody>
+  </table></div>`;
+}
+
+/* ───────── 영유아 관리 ───────── */
+function ChildrenView({ctx}){
+  const {db,newRecord,setDb,setModal,say}=ctx;
+  const [scope,setScope]=useState('term');
+  const [q,setQ]=useState('');
+  let list = scope==='term'? termRecords(db) : db.records;
+  if(q.trim()) list=list.filter(r=>(r.basic.name+r.basic.className+r.basic.teacher).includes(q.trim()));
+  list=list.slice().sort((a,b)=> (b.basic.year*10+b.basic.semester)-(a.basic.year*10+a.basic.semester) || a.basic.name.localeCompare(b.basic.name,'ko'));
+  const samples=db.records.filter(r=>r.sample).length;
+  return html`<div>
+    <div className="pagehead">
+      <div className="grow"><h2>영유아 관리</h2><p>영유아별·학기별 상담자료를 관리합니다. 같은 아이의 다음 학기 자료는 "다음 학기" 버튼으로 이어서 만들 수 있어요.</p></div>
+      <button className="btn primary" onClick=${newRecord}><${Icon} n="plus"/>새 영유아 등록</button>
+    </div>
+    <div className="row" style=${{marginBottom:'12px'}}>
+      <div className="choice">
+        <label><input type="radio" name="scope" checked=${scope==='term'} onChange=${()=>setScope('term')}/>${termLabel(db.session.year,db.session.semester)}</label>
+        <label><input type="radio" name="scope" checked=${scope==='all'} onChange=${()=>setScope('all')}/>모든 학기</label>
+      </div>
+      <input type="text" id="child-search" placeholder="이름, 반, 교사로 찾기" value=${q} onChange=${e=>setQ(e.target.value)} style=${{maxWidth:'260px'}}/>
+      ${samples>0 && html`<button className="btn sm" style=${{marginLeft:'auto'}} onClick=${()=>setModal({title:'예시 자료를 모두 지울까요?',danger:true,confirmLabel:'예시 자료 지우기',body:html`<p>가상의 예시 영유아 ${samples}명과 예시 교사 목록을 지웁니다. 직접 입력한 자료는 지워지지 않습니다.</p>`,onConfirm:()=>{ setDb(d=>({...d,records:d.records.filter(r=>!r.sample),teachers:d.teachers.filter(t=>!t.id.startsWith('t_sample')),session:{...d.session,teacherId:d.session.teacherId&&d.session.teacherId.startsWith('t_sample')?null:d.session.teacherId}})); say('예시 자료를 지웠어요.'); }})}><${Icon} n="trash" size=${14}/>예시 자료 지우기</button>`}
+    </div>
+    ${list.length? html`<${RecordTable} ctx=${ctx} list=${list} manage=${true}/>` : html`<div className="card empty-state"><h3>조건에 맞는 자료가 없어요</h3></div>`}
+  </div>`;
+}
+
+/* ───────── 상담자료 작성 ───────── */
+function WriteView({ctx}){
+  const {db,cur,step,setStep,openRecord,newRecord}=ctx;
+  if(!cur){
+    const list=termRecords(db);
+    return html`<div className="card empty-state"><${Sprig} size=${56}/><h3>작성할 영유아를 선택해 주세요</h3><p>목록에서 고르거나 새로 등록하면 입력 화면이 열립니다.</p>
+      <div className="row" style=${{justifyContent:'center'}}>${list.map(r=>html`<button key=${r.id} className="btn soft" onClick=${()=>openRecord(r.id)}>${displayName(r)}</button>`)}<button className="btn primary" onClick=${newRecord}><${Icon} n="plus"/>새 영유아 등록</button></div></div>`;
+  }
+  const S=STEPS[step-1];
+  const go=n=>{ setStep(n); window.scrollTo({top:0,behavior:'smooth'}); };
+  return html`<div className="write">
+    <nav className="steps" aria-label="입력 단계">
+      <div className="who"><span className="muted small">${termLabel(cur.basic.year,cur.basic.semester)}</span><b>${displayName(cur)}</b>${cur.sample&&html`<span className="tag-sample">예시 자료</span>`}</div>
+      ${STEPS.map(s=>{ const st=stepState(cur,s); return html`<button key=${s.n} className=${'stepbtn '+st.cls} aria-current=${step===s.n?'step':undefined} onClick=${()=>go(s.n)}>
+        <span className="n">${st.cls==='full'? html`<${Icon} n="check" size=${13}/>` : s.n}</span>
+        <span className="t">${s.title}<small>${st.label}</small></span></button>`; })}
+    </nav>
+    <section aria-labelledby="step-title" style=${{minWidth:0}}>
+      <div className="stephead"><span className="big">STEP ${S.n}</span><div><h2 id="step-title">${S.title}</h2><p>${STEP_DESC[S.key]}</p></div></div>
+      ${React.createElement(STEP_COMP[S.key],{ctx,rec:cur})}
+      <div className="navbtns" style=${{marginTop:'20px'}}>
+        <button className="btn" disabled=${step===1} onClick=${()=>go(step-1)}><${Icon} n="arrowL"/>이전 단계</button>
+        ${step<STEPS.length? html`<button className="btn primary" onClick=${()=>go(step+1)}>다음: ${STEPS[step].title}<${Icon} n="arrowR"/></button>`
+                : html`<button className="btn primary" onClick=${()=>ctx.setView('analysis')}>입력 점검하기<${Icon} n="arrowR"/></button>`}
+      </div>
+    </section>
+    <${SidePanel} ctx=${ctx} rec=${cur} go=${go}/>
+  </div>`;
+}
+const STEP_DESC = {
+  basic:'월령은 생년월일과 상담 예정일로 자동 계산됩니다.',
+  survey:'부모님이 작성한 설문을 그대로 옮겨 적어 주세요. 질문은 STEP 7, 양육의 어려움은 STEP 9에 따로 입력합니다.',
+  obs:'모든 항목은 선택 입력입니다. 관찰한 내용만 짧게 메모해 주세요. 비어 있는 항목은 자료에 만들어 넣지 않습니다.',
+  growth:'이전 학기 자료가 없다면 현재 관찰 중심으로 작성합니다.',
+  safety:'선택 입력입니다. 비워 두면 학부모용 성장 리포트에서 자동으로 생략됩니다.',
+  focus:'상담 전에 꼭 전달하고 싶은 내용을 정리합니다.',
+  questions:'부모님이 설문에 적은 질문을 그대로 옮기고, 질문마다 답변과 전달 방식을 정해 주세요.',
+  photos:'학부모용 성장 리포트에 들어갈 사진은 최대 2장입니다. 사진이 없으면 사진틀은 인쇄되지 않습니다.',
+  concern:'입력 과정의 마지막 단계입니다. 부모님의 양육 고민과 교사의 지원 방향을 정리하고 부모교육자료 생성 여부를 정합니다.',
+};
+
+function SidePanel({ctx,rec,go}){
+  const {updateRecord,saveNow,db,say}=ctx;
+  const pct=overallProgress(rec);
+  const hits=cautionHits(rec);
+  const qNeed=rec.questions.filter(q=>!has(q.a)).length;
+  const qNoMode=rec.questions.filter(q=>!q.mode).length;
+  const inReport=rec.questions.filter(q=>q.mode==='report'||q.mode==='both').length;
+  const safety=safetyFilled(rec);
+  const edu=rec.concern.generate==='yes';
+  return html`<aside className="side" aria-label="작성 상태">
+    <div className="card">
+      <h4>작성 상태</h4>
+      <div className="bar"><i style=${{width:pct+'%'}}></i></div>
+      <p className="small muted" style=${{marginTop:'6px'}}>필수 단계 기준 ${pct}% 입력</p>
+      <div className="field" style=${{marginTop:'10px'}}>
+        <label htmlFor="side-status">진행 상태</label>
+        <select id="side-status" value=${rec.status} onChange=${e=>updateRecord(rec.id,r=>({...r,status:e.target.value}))}>${STATUS.map(([k,l])=>html`<option key=${k} value=${k}>${l}</option>`)}</select>
+      </div>
+      <div className="row" style=${{marginTop:'12px'}}>
+        <button className="btn primary sm" onClick=${()=>{ if(saveNow(db)) say('이 브라우저에 저장했어요.'); else say('브라우저 저장에 실패했어요. 저장 및 출력에서 JSON 파일로 내보내 주세요.'); }}><${Icon} n="save" size=${14}/>지금 저장</button>
+        <button className="btn sm" onClick=${()=>ctx.setView('save')}><${Icon} n="download" size=${14}/>파일 백업</button>
+      </div>
+    </div>
+    <div className="card">
+      <h4>학부모용 리포트 구성 미리보기</h4>
+      <ul className="plist">
+        <li><span className="pg">1p</span><span>우리 아이 성장 이야기 · 대표 사진 ${rec.photos.main.src?'있음':html`<span className="muted">없음(사진틀 생략)</span>`}</span></li>
+        <li><span className="pg">2p</span><span>함께 자라는 우리 아이 · 활동 사진 ${rec.photos.play.src?'있음':html`<span className="muted">없음</span>`}</span></li>
+        <li><span className="pg">2p</span><span className=${safety?'':'off'}>안전하고 건강한 어린이집 생활을 위해</span>${!safety&&html`<span className="muted small">생략</span>`}</li>
+        <li><span className="pg">2p</span><span>부모님 질문 리포트 반영 ${inReport}개</span></li>
+        <li><span className="pg">3p</span><span className=${edu?'':'off'}>함께하는 부모교육</span>${!edu&&html`<span className="muted small">${rec.concern.generate==='no'?'생성 안 함':'미선택'}</span>`}</li>
+      </ul>
+      <div className="row" style=${{marginTop:'8px'}}><button className="btn sm soft" onClick=${()=>ctx.setView('analysis')}>Claude 요청문 만들기</button><button className="btn sm" onClick=${()=>ctx.setView('report')}>리포트 보기</button></div>
+    </div>
+    <div className="card">
+      <h4>상담 전 확인</h4>
+      <ul className="plist">
+        <li>${rec.questions.length? (qNeed? html`<span className="chip warn">답변 준비 필요 ${qNeed}</span>` : html`<span className="chip ok">질문 ${rec.questions.length}개 답변 준비</span>`) : html`<span className="chip">등록된 부모님 질문 없음</span>`}</li>
+        ${qNoMode>0 && html`<li><span className="chip warn">전달 방식 미선택 ${qNoMode}</span></li>`}
+        ${rec.safety.important && html`<li><span className="chip danger">안전 관련 중요 관찰 있음</span></li>`}
+        <li>${hits.length? html`<span className="chip apricot">다시 살펴볼 표현 ${hits.length}</span>` : html`<span className="chip ok">점검할 표현 없음</span>`}</li>
+      </ul>
+      ${hits.length>0 && html`<ul className="plist" style=${{marginTop:'8px'}}>${hits.slice(0,4).map((h,i)=>html`<li key=${i} className="small"><span><b>"${h.phrase}"</b> · ${h.where}<br/><span className="muted">${h.tip}</span></span></li>`)}</ul>`}
+    </div>
+  </aside>`;
+}
+
+/* STEP 1 */
+function Step1({ctx,rec}){
+  const {setField,db}=ctx; const b=rec.basic; const f=(k,v)=>setField(rec.id,['basic',k],v);
+  const age=ageInfo(b.birth,b.date||null);
+  const classes=[...new Set([...db.teachers.map(t=>t.className),...db.records.map(r=>r.basic.className)].filter(Boolean))];
+  return html`<div className="card"><div className="grid2">
+    <${Field} id="b-name" type="text" label="이름 또는 가명" value=${b.name} onChange=${v=>f('name',v)} placeholder="가명 사용을 권장해요"/>
+    <${Field} id="b-birth" type="date" label="생년월일" value=${b.birth} onChange=${v=>f('birth',v)}/>
+    <div className="field"><span className="lbl">월령 (자동 계산)</span><div className="computed">${age? `${age.months}개월 · 만 ${age.years}세` : '생년월일을 입력하면 계산됩니다'}</div><p className="hint" style=${{marginTop:0}}>${b.date?'상담 예정일 기준':'오늘 기준 (상담 예정일을 넣으면 그날 기준으로 바뀌어요)'}</p></div>
+    <div className="field"><label htmlFor="b-class">반 이름</label><input id="b-class" type="text" list="class-list" className=${has(b.className)?'filled':''} value=${b.className} onChange=${e=>f('className',e.target.value)}/><datalist id="class-list">${classes.map(c=>html`<option key=${c} value=${c}/>`)}</datalist></div>
+    <div className="field"><label htmlFor="b-teacher">담당 교사</label>
+      <select id="b-teacher" value=${rec.teacherId||''} onChange=${e=>{ const t=db.teachers.find(x=>x.id===e.target.value); ctx.updateRecord(rec.id,r=>({...r,teacherId:t?t.id:null,basic:{...r.basic,teacher:t?t.name:r.basic.teacher,className:r.basic.className||(t?t.className:'')}})); }}>
+        <option value="">${b.teacher&&!rec.teacherId? b.teacher+' (목록에 없음)':'선택'}</option>
+        ${db.teachers.map(t=>html`<option key=${t.id} value=${t.id}>${t.name} · ${t.className}</option>`)}
+      </select><p className="hint" style=${{marginTop:0}}>목록은 상단 "교사 관리"에서 추가할 수 있어요.</p></div>
+    <div className="field"><span className="lbl">학년도 및 학기</span><div className="row" style=${{flexWrap:'nowrap'}}>
+      <input id="b-year" type="number" min="2020" max="2100" value=${b.year} onChange=${e=>f('year',Number(e.target.value)||b.year)} aria-label="학년도"/>
+      <select id="b-sem" value=${b.semester} onChange=${e=>f('semester',Number(e.target.value))} aria-label="학기"><option value=${1}>1학기</option><option value=${2}>2학기</option></select></div></div>
+    <${Field} id="b-date" type="date" label="상담 예정일" value=${b.date} onChange=${v=>f('date',v)}/>
+    <${Field} id="b-time" type="time" label="상담 시간" value=${b.time} onChange=${v=>f('time',v)}/>
+    <div className="field span2"><span className="lbl">상담 방법</span><div className="choice">${['전화','방문'].map(m=>html`<label key=${m}><input type="radio" name="b-method" checked=${b.method===m} onChange=${()=>f('method',m)}/>${m}</label>`)}</div></div>
+  </div></div>`;
+}
+
+/* STEP 2 */
+function Step2({ctx,rec}){
+  const {setField}=ctx;
+  return html`<div className="stack">
+    <div className="notice"><${Icon} n="info"/><div>부모님 표현을 최대한 그대로 옮겨 주세요. 설문에 없는 내용은 비워 두면 됩니다.</div></div>
+    <div className="card"><div className="grid2">
+      ${SURVEY.map(([k,l],i)=>html`<${Field} key=${k} id=${'s-'+k} num=${i+1} label=${l} value=${rec.survey[k]} onChange=${v=>setField(rec.id,['survey',k],v)}/>`)}
+    </div></div>
+  </div>`;
+}
+
+/* STEP 3 */
+function WritingHelp(){
+  return html`<details className="help"><summary>관찰 메모 작성 도움말</summary>
+    <div className="cols">
+      <div><b>피해야 할 표현</b><ul className="no"><li>문제가 많아요.</li><li>고집이 세요.</li><li>친구들과 잘 어울리지 못해요.</li><li>집중력이 없어요.</li><li>집에서도 잘 지도해 주세요.</li></ul></div>
+      <div><b>권장하는 표현</b><ul className="yes"><li>원하는 활동을 계속하고 싶을 때 울음이나 몸짓으로 자신의 마음을 표현해요.</li><li>친구의 놀이를 먼저 관찰한 뒤 관심 있는 놀잇감에 가까이 다가가요.</li><li>관심 있는 활동은 반복 탐색하며, 새 활동으로 전환할 때 교사의 안내가 필요할 때가 있어요.</li></ul></div>
+    </div>
+    <p className="muted small" style=${{marginTop:'8px'}}>관찰한 사실(언제, 어디서, 무엇을)과 교사의 해석은 나누어 적어 주세요. 성격 단정, 다른 아이와의 비교, 원인 추측, 발달 진단은 피합니다.</p>
+  </details>`;
+}
+function Step3({ctx,rec}){
+  const [allOpen,setAllOpen]=useState(null);
+  const {setField,updateRecord}=ctx;
+  const addEp=dk=>updateRecord(rec.id,r=>setIn(r,['obs','_ep',dk],[...(r.obs._ep[dk]||[]),{id:uid('ep'),date:todayStr(),situation:'',behavior:'',support:'',response:''}]));
+  const delEp=(dk,id)=>updateRecord(rec.id,r=>setIn(r,['obs','_ep',dk],r.obs._ep[dk].filter(e=>e.id!==id)));
+  const setEp=(dk,i,k,v)=>setField(rec.id,['obs','_ep',dk,i,k],v);
+  return html`<div className="stack">
+    <${WritingHelp}/>
+    <div className="row"><button className="btn sm" onClick=${()=>setAllOpen(true)}>모든 영역 펼치기</button><button className="btn sm" onClick=${()=>setAllOpen(false)}>모든 영역 접기</button></div>
+    <div>${OBS.map((d,di)=>{ const filled=d.items.filter(([k])=>has(rec.obs[d.key][k])).length; const eps=rec.obs._ep[d.key]||[];
+      return html`<details key=${d.key+'-'+allOpen} className="domain" open=${allOpen===null ? (di===0||filled>0) : allOpen}>
+        <summary><span className="mark">${'①②③④⑤⑥⑦'[di]}</span><h3>${d.title}</h3><span className=${'chip '+(filled?'ok':'')}>${filled}/${d.items.length}${eps.length?` · 일화 ${eps.length}`:''}</span><span className="chev"><${Icon} n="chev"/></span></summary>
+        <div className="body">
+          <div className="grid2">${d.items.map(([k,l])=>html`<${Field} key=${k} id=${`o-${d.key}-${k}`} label=${l} value=${rec.obs[d.key][k]} onChange=${v=>setField(rec.id,['obs',d.key,k],v)} placeholder="관찰한 내용이 있을 때만 적어 주세요"/>`)}</div>
+          ${eps.map((e,i)=>html`<div key=${e.id} className="episode">
+            <div className="eh"><b className="small">관찰 일화 ${i+1}</b><input type="date" id=${`ep-${e.id}-date`} value=${e.date} onChange=${ev=>setEp(d.key,i,'date',ev.target.value)} style=${{width:'auto',padding:'4px 8px'}} aria-label="관찰 날짜"/><button className="btn sm icon danger" style=${{marginLeft:'auto'}} aria-label="일화 삭제" onClick=${()=>delEp(d.key,e.id)}><${Icon} n="trash" size=${14}/></button></div>
+            <div className="grid2">
+              <${Field} id=${`ep-${e.id}-s`} label="상황" value=${e.situation} onChange=${v=>setEp(d.key,i,'situation',v)}/>
+              <${Field} id=${`ep-${e.id}-b`} label="행동" value=${e.behavior} onChange=${v=>setEp(d.key,i,'behavior',v)}/>
+              <${Field} id=${`ep-${e.id}-t`} label="교사 지원" value=${e.support} onChange=${v=>setEp(d.key,i,'support',v)}/>
+              <${Field} id=${`ep-${e.id}-r`} label="이후 반응" value=${e.response} onChange=${v=>setEp(d.key,i,'response',v)}/>
+            </div></div>`)}
+          <div><button className="btn sm soft" onClick=${()=>addEp(d.key)}><${Icon} n="plus" size=${14}/>관찰 일화 추가 (날짜·상황·행동·지원·반응)</button></div>
+        </div></details>`; })}</div>
+  </div>`;
+}
+
+/* STEP 4 */
+function Step4({ctx,rec}){
+  const {setField,db}=ctx;
+  const prev=rec.prevId? db.records.find(r=>r.id===rec.prevId) : db.records.filter(r=>r.childKey===rec.childKey && r.id!==rec.id && (r.basic.year*10+r.basic.semester)<(rec.basic.year*10+rec.basic.semester)).sort((a,b)=>(b.basic.year*10+b.basic.semester)-(a.basic.year*10+a.basic.semester))[0];
+  return html`<div className="stack">
+    ${prev? html`<div className="notice sage"><${Icon} n="leaf"/><div style=${{flex:1}}><b>${termLabel(prev.basic.year,prev.basic.semester)} 기록이 있어요.</b>
+        <dl className="kv" style=${{marginTop:'6px'}}><dt>현재 모습</dt><dd>${prev.growth.now||'—'}</dd><dt>성장한 부분</dt><dd>${prev.growth.grown||'—'}</dd><dt>지원하고 싶은 부분</dt><dd>${prev.growth.support||'—'}</dd></dl></div>
+        <button className="btn sm" onClick=${()=>setField(rec.id,['growth','prev'],[rec.growth.prev,prev.growth.now].filter(has).join('\n'))} disabled=${!has(prev.growth.now)}>지난 학기 모습에 넣기</button></div>`
+      : html`<div className="notice"><${Icon} n="info"/><div>이전 학기 자료가 없어요. 현재 관찰 중심으로 작성해 주세요. 지난 학기 자료가 있다면 영유아 관리에서 "다음 학기" 버튼으로 이어서 만들면 여기에서 참고할 수 있어요.</div></div>`}
+    <div className="card"><div className="grid2">${GROWTH.map(([k,l,h])=>html`<${Field} key=${k} id=${'g-'+k} label=${l} hint=${h} value=${rec.growth[k]} onChange=${v=>setField(rec.id,['growth',k],v)} rows=${3}/>`)}</div></div>
+  </div>`;
+}
+
+/* STEP 5 */
+function Step5({ctx,rec}){
+  const {setField,updateRecord}=ctx; const s=rec.safety;
+  const toggle=a=>updateRecord(rec.id,r=>setIn(r,['safety','areas'], r.safety.areas.includes(a)? r.safety.areas.filter(x=>x!==a) : [...r.safety.areas,a]));
+  const filled=safetyFilled(rec);
+  return html`<div className="stack">
+    <div className=${'notice '+(filled?'sage':'')}><${Icon} n=${filled?'check':'info'}/><div>${filled? '입력한 내용은 학부모용 성장 리포트 2페이지와 교사용 상담 가이드에 반영됩니다.' : '아직 입력한 내용이 없어요. 비워 두면 학부모용 성장 리포트에서 이 영역이 자동으로 생략됩니다.'}</div></div>
+    <div className="card stack">
+      <div className="field"><span className="lbl"><span className="qnum">1.</span>관찰 영역</span><div className="choice">${SAFETY_AREAS.map(a=>html`<label key=${a}><input type="checkbox" checked=${s.areas.includes(a)} onChange=${()=>toggle(a)}/>${a}</label>`)}</div>
+        ${s.areas.includes('기타') && html`<input type="text" id="sf-etc" placeholder="기타 영역을 적어 주세요" value=${s.areaEtc} onChange=${e=>setField(rec.id,['safety','areaEtc'],e.target.value)} style=${{marginTop:'6px'}}/>`}</div>
+      <div className="grid2">${SAFETY_Q.map(([k,l,h],i)=>html`<${Field} key=${k} id=${'sf-'+k} num=${i+2} label=${l} hint=${h} value=${s[k]} onChange=${v=>setField(rec.id,['safety',k],v)} rows=${3}/>`)}</div>
+      <label className="row small" style=${{gap:'8px',padding:'10px 12px',borderRadius:'var(--r-md)',background:s.important?'var(--danger-soft)':'var(--surface-2)'}}>
+        <input type="checkbox" id="sf-important" checked=${s.important} onChange=${e=>setField(rec.id,['safety','important'],e.target.checked)} style=${{accentColor:'var(--danger)'}}/>
+        <span><b>안전과 관련된 중요한 관찰입니다.</b> 표시하면 상담 가이드 앞부분에 우선 표시하고, 리포트 정리 과정에서 축소하거나 빠뜨리지 않도록 안내합니다.</span></label>
+    </div>
+    <p className="small muted">행동의 원인을 추측하거나 아이의 성격을 단정하지 말고, 실제로 관찰한 행동과 지원 방향을 중심으로 적어 주세요.</p>
+  </div>`;
+}
+
+/* STEP 6 */
+function Step6({ctx,rec}){
+  const {setField}=ctx;
+  return html`<div className="card"><div className="grid2">${FOCUS.map(([k,l],i)=>html`<${Field} key=${k} id=${'f-'+k} num=${i+1} label=${l} value=${rec.focus[k]} onChange=${v=>setField(rec.id,['focus',k],v)} rows=${3}/>`)}</div></div>`;
+}
+
+/* STEP 7 */
+function Step7({ctx,rec}){
+  const [bulk,setBulk]=useState(null);
+  const {updateRecord,setField,setModal}=ctx; const qs=rec.questions;
+  const setQs=fn=>updateRecord(rec.id,r=>({...r,questions:fn(r.questions)}));
+  const add=()=>setQs(q=>[...q,{id:uid('q'),q:'',a:'',mode:''}]);
+  const move=(i,d)=>setQs(q=>{ const a=q.slice(); const j=i+d; if(j<0||j>=a.length) return a; [a[i],a[j]]=[a[j],a[i]]; return a; });
+  const del=(i)=>setModal({title:'이 질문을 삭제할까요?',danger:true,confirmLabel:'삭제',body:html`<p>"${qs[i].q||'(내용 없음)'}"</p>`,onConfirm:()=>setQs(q=>q.filter((_,k)=>k!==i))});
+  return html`<div className="stack">
+    <div className="notice"><${Icon} n="info"/><div>모든 질문은 전달 방식과 관계없이 <b>교사용 상담 가이드 앞부분</b>에 표시됩니다. 답변을 비워 두면 임의로 만들지 않고 <b>답변 준비 필요</b>로 표시합니다.</div></div>
+    ${qs.map((q,i)=>html`<div key=${q.id} className="qcard">
+      <div className="qh"><b>질문 ${i+1}</b>${!has(q.a)? html`<span className="chip warn">답변 준비 필요</span>` : html`<span className="chip ok">답변 작성됨</span>`}${!q.mode&&html`<span className="chip warn">전달 방식 미선택</span>`}
+        <div className="tools"><button className="btn sm icon" aria-label="위로" disabled=${i===0} onClick=${()=>move(i,-1)}><${Icon} n="up" size=${14}/></button><button className="btn sm icon" aria-label="아래로" disabled=${i===qs.length-1} onClick=${()=>move(i,1)}><${Icon} n="down" size=${14}/></button><button className="btn sm icon danger" aria-label="질문 삭제" onClick=${()=>del(i)}><${Icon} n="trash" size=${14}/></button></div></div>
+      <${Field} id=${'q-'+q.id} label="부모님 질문" hint="부모님이 작성한 질문을 그대로 입력합니다." value=${q.q} onChange=${v=>setField(rec.id,['questions',i,'q'],v)}/>
+      <${Field} id=${'a-'+q.id} label="교사가 전달할 답변 및 관찰 내용" hint="어린이집 생활과 실제 관찰을 바탕으로 적어 주세요." value=${q.a} onChange=${v=>setField(rec.id,['questions',i,'a'],v)} rows=${3}/>
+      <div className="field"><span className="lbl">답변 전달 방식</span><div className="choice">${Q_MODES.map(([k,l,h])=>html`<label key=${k} title=${h}><input type="radio" name=${'mode-'+q.id} checked=${q.mode===k} onChange=${()=>setField(rec.id,['questions',i,'mode'],k)}/>${l}</label>`)}</div>
+        ${q.mode && html`<p className="hint" style=${{marginTop:'2px'}}>${Q_MODES.find(m=>m[0]===q.mode)[2]}</p>`}</div>
+    </div>`)}
+    ${!qs.length && html`<div className="card empty-state"><h3>등록된 질문이 없어요</h3><p>부모님 설문지에 질문이 있다면 추가해 주세요.</p></div>`}
+    <div className="row"><button className="btn primary" onClick=${add}><${Icon} n="plus"/>질문 추가</button><button className="btn" onClick=${()=>setBulk(bulk===null?'':null)}>여러 질문 한꺼번에 붙여넣기</button></div>
+    ${bulk!==null && html`<div className="card stack"><div className="field"><label htmlFor="q-bulk">한 줄에 질문 하나씩 붙여넣어 주세요</label><textarea id="q-bulk" rows="4" value=${bulk} onChange=${e=>setBulk(e.target.value)} placeholder="예: 집에서는 채소를 안 먹는데 어린이집에서는 어떤가요?"></textarea></div>
+      <div className="row"><button className="btn primary" disabled=${!bulk.trim()} onClick=${()=>{ const lines=bulk.split('\n').map(x=>x.replace(/^\s*(\d+[.)]|[-•·*])\s*/,'').trim()).filter(Boolean); setQs(q=>[...q,...lines.map(t=>({id:uid('q'),q:t,a:'',mode:''}))]); setBulk(null); }}>질문으로 추가</button><button className="btn" onClick=${()=>setBulk(null)}>닫기</button></div></div>`}
+  </div>`;
+}
+
+/* STEP 8 */
+function PhotoFrame({p,label}){
+  const ratio = p.ratio==='orig' ? (p.w&&p.h? `${p.w} / ${p.h}` : '4 / 3') : p.ratio.replace(':',' / ');
+  if(!p.src) return html`<div className="frame empty" style=${{aspectRatio:'4 / 3'}}><div><${Icon} n="photo" size=${28}/><div>${label} 없음</div><div className="small">리포트에 사진틀이 인쇄되지 않아요</div></div></div>`;
+  const z=p.zoom/100;
+  return html`<div className="frame" style=${{aspectRatio:ratio, maxHeight:'420px'}}>
+    <img src=${p.src} alt=${p.caption||label} style=${{objectFit:p.fit, objectPosition:`${p.x}% ${p.y}%`, transform:`scale(${z})`, transformOrigin:`${p.x}% ${p.y}%`, background:'var(--surface-2)'}}/>
+  </div>`;
+}
+function PhotoSlot({ctx,rec,slot,label,desc}){
+  const {setField,updateRecord,say,saveState}=ctx; const p=rec.photos[slot];
+  const inp=useRef();
+  const set=(k,v)=>setField(rec.id,['photos',slot,k],v);
+  const onFile=async e=>{
+    const file=e.target.files&&e.target.files[0]; e.target.value='';
+    if(!file) return;
+    if(!/^image\/(jpeg|png)$/.test(file.type)){ say('JPG 또는 PNG 파일만 첨부할 수 있어요.'); return; }
+    try{ const r=await readImage(file); updateRecord(rec.id,x=>setIn(x,['photos',slot],{...emptyPhoto(),caption:x.photos[slot].caption,src:r.src,w:r.w,h:r.h})); say(`${label}을 첨부했어요.`); }
+    catch(err){ say('사진을 읽지 못했어요. 다른 파일로 시도해 주세요.'); }
+  };
+  const notStored = saveState.photoErrors && saveState.photoErrors.includes(rec.id+':'+slot);
+  return html`<div className="pslot">
+    <div className="row"><h3 style=${{fontSize:'17px'}}>${label}</h3><span className="muted small">${desc}</span></div>
+    <${PhotoFrame} p=${p} label=${label}/>
+    ${p.missing && !p.src && html`<div className="notice warn small"><${Icon} n="alert"/><div>이전에 첨부한 사진이 저장 파일에 포함되지 않았어요. 사진을 다시 첨부해 주세요.</div></div>`}
+    ${notStored && html`<div className="notice warn small"><${Icon} n="alert"/><div>브라우저 저장 공간이 부족해 이 사진은 임시 저장되지 않았어요. "사진 포함"으로 JSON 파일을 내보내 두세요.</div></div>`}
+    <input ref=${inp} type="file" accept="image/jpeg,image/png" hidden onChange=${onFile} id=${'file-'+slot}/>
+    <div className="row">
+      <button className="btn sm primary" onClick=${()=>inp.current.click()}><${Icon} n="upload" size=${14}/>${p.src?'사진 변경':'사진 첨부'}</button>
+      ${p.src && html`<button className="btn sm danger" onClick=${()=>updateRecord(rec.id,x=>setIn(x,['photos',slot],{...emptyPhoto()}))}><${Icon} n="trash" size=${14}/>삭제</button>`}
+    </div>
+    ${p.src && html`<div style=${{display:'grid',gap:'10px'}}>
+      <div className="field"><span className="lbl">표시 방식</span><div className="choice">
+        <label><input type="radio" name=${'fit-'+slot} checked=${p.fit==='contain'} onChange=${()=>set('fit','contain')}/>사진 전체 보이기</label>
+        <label><input type="radio" name=${'fit-'+slot} checked=${p.fit==='cover'} onChange=${()=>set('fit','cover')}/>틀에 꽉 채우기</label></div>
+        ${p.fit==='cover' && html`<p className="hint" style=${{marginTop:'2px',color:'var(--warn)'}}>가장자리가 잘릴 수 있어요. 얼굴이나 몸이 잘리지 않았는지 확인하고 위치를 조절해 주세요.</p>`}</div>
+      <div className="field"><span className="lbl">사진틀 비율</span><div className="choice">${[['orig','원본 비율'],['4:3','가로 4:3'],['3:4','세로 3:4'],['1:1','정사각형']].map(([k,l])=>html`<label key=${k}><input type="radio" name=${'ratio-'+slot} checked=${p.ratio===k} onChange=${()=>set('ratio',k)}/>${l}</label>`)}</div></div>
+      ${(p.fit==='cover'||p.zoom>100) && html`<div className="range"><label htmlFor=${'px-'+slot}>좌우 위치</label><input id=${'px-'+slot} type="range" min="0" max="100" value=${p.x} onChange=${e=>set('x',Number(e.target.value))}/><span className="small muted">${p.x}%</span></div>
+      <div className="range"><label htmlFor=${'py-'+slot}>상하 위치</label><input id=${'py-'+slot} type="range" min="0" max="100" value=${p.y} onChange=${e=>set('y',Number(e.target.value))}/><span className="small muted">${p.y}%</span></div>`}
+      <div className="range"><label htmlFor=${'pz-'+slot}>확대</label><input id=${'pz-'+slot} type="range" min="100" max="250" step="5" value=${p.zoom} onChange=${e=>set('zoom',Number(e.target.value))}/><span className="small muted">${p.zoom}%</span></div>
+      <button className="btn sm" style=${{justifySelf:'start'}} onClick=${()=>updateRecord(rec.id,x=>setIn(x,['photos',slot],{...x.photos[slot],fit:'contain',ratio:'orig',x:50,y:50,zoom:100}))}><${Icon} n="refresh" size=${14}/>원래대로</button>
+    </div>`}
+    <${Field} id=${'cap-'+slot} type="text" label="사진 설명" value=${p.caption} onChange=${v=>set('caption',v)} placeholder="예: 경사로에 자동차를 굴리며 즐거워하는 모습"/>
+  </div>`;
+}
+function Step8({ctx,rec}){
+  return html`<div className="stack">
+    <div className="notice"><${Icon} n="info"/><div>사진은 JPG·PNG만 첨부할 수 있고, 긴 변 1600px로 줄여 이 브라우저에 저장됩니다. JSON 파일로 내보낼 때 "사진 포함"을 고르지 않으면 사진은 파일에 들어가지 않으니, 불러온 뒤 다시 첨부해 주세요. 사진 사용은 기관의 초상권·개인정보 동의 기준을 따라 주세요.</div></div>
+    <div className="photos">
+      <${PhotoSlot} ctx=${ctx} rec=${rec} slot="main" label="대표 사진" desc="리포트 1페이지"/>
+      <${PhotoSlot} ctx=${ctx} rec=${rec} slot="play" label="놀이 및 활동 사진" desc="리포트 2페이지"/>
+    </div>
+  </div>`;
+}
+
+/* STEP 9 */
+function Step9({ctx,rec}){
+  const {setField,updateRecord}=ctx; const c=rec.concern;
+  const toggle=t=>updateRecord(rec.id,r=>setIn(r,['concern','topics'], r.concern.topics.includes(t)? r.concern.topics.filter(x=>x!==t) : [...r.concern.topics,t]));
+  return html`<div className="stack">
+    <div className="card stack">
+      <${Field} id="c-text" num=${1} label="부모님이 느끼는 양육의 어려움" hint="부모님이 작성한 내용을 입력합니다. 이 내용은 리포트에 그대로 노출되지 않습니다." value=${c.text} onChange=${v=>setField(rec.id,['concern','text'],v)} rows=${3}/>
+      <div className="field"><span className="lbl"><span className="qnum">2.</span>관련 양육 주제</span><div className="choice">${CONCERN_TOPICS.map(t=>html`<label key=${t}><input type="checkbox" checked=${c.topics.includes(t)} onChange=${()=>toggle(t)}/>${t}</label>`)}</div>
+        ${c.topics.includes('기타 양육 고민') && html`<input type="text" id="c-etc" placeholder="기타 양육 고민 주제" value=${c.topicEtc} onChange=${e=>setField(rec.id,['concern','topicEtc'],e.target.value)} style=${{marginTop:'6px'}}/>`}</div>
+      <div className="grid2">${CONCERN_Q.map(([k,l,h],i)=>html`<${Field} key=${k} id=${'c-'+k} num=${i+3} label=${l} hint=${h} value=${c[k]} onChange=${v=>setField(rec.id,['concern',k],v)} rows=${3}/>`)}</div>
+    </div>
+    <div className="card">
+      <div className="field"><span className="lbl"><span className="qnum">7.</span>부모교육자료 생성 여부</span>
+        <div className="choice"><label><input type="radio" name="c-gen" checked=${c.generate==='yes'} onChange=${()=>setField(rec.id,['concern','generate'],'yes')}/>부모교육자료 생성하기</label><label><input type="radio" name="c-gen" checked=${c.generate==='no'} onChange=${()=>setField(rec.id,['concern','generate'],'no')}/>생성하지 않기</label></div></div>
+      <div className=${'notice '+(c.generate==='yes'?'sage':'')} style=${{marginTop:'12px'}}><${Icon} n=${c.generate==='yes'?'leaf':'info'}/><div>${c.generate==='yes'
+        ? '학부모용 성장 리포트 3페이지에 A4 한 장 분량의 "함께하는 부모교육"이 들어갑니다. 제목, 발달 특성 이해, 가정 실천 방법 3~5가지, 대화 예시, 어린이집과 가정의 협력으로 구성되며, 교사가 검토·승인한 뒤 출력합니다. 내용은 "자료 분석"에서 Claude용 요청문으로 만들어 작성하고, 리포트 편집에서 수정합니다.'
+        : c.generate==='no' ? '성장 리포트는 2페이지로 구성되고 부모교육 페이지는 제외됩니다.' : '생성 여부를 선택해 주세요.'}</div></div>
+    </div>
+  </div>`;
+}
+const STEP_COMP={basic:Step1,survey:Step2,obs:Step3,growth:Step4,safety:Step5,focus:Step6,questions:Step7,photos:Step8,concern:Step9};
+
+/* ───────── 자료 분석 (1차: 입력 점검) ───────── */
+function AnalysisView({ctx}){
+  const {cur,openRecord,db}=ctx;
+  if(!cur) return html`<div className="card empty-state"><h3>먼저 상담자료 작성에서 영유아를 선택해 주세요</h3><div className="row" style=${{justifyContent:'center'}}>${termRecords(db).map(r=>html`<button key=${r.id} className="btn soft" onClick=${()=>{ ctx.setCurId(r.id); }}>${displayName(r)}</button>`)}</div></div>`;
+  const hits=cautionHits(cur);
+  const qs=cur.questions;
+  const obsCount=stepProgress(cur,'obs');
+  const items=[
+    ['아이의 성장 사례가 구체적인가?', obsCount.extra>0 || has(cur.growth.grown) ? 'y' : 'n', obsCount.extra>0? `관찰 일화 ${obsCount.extra}개, 성장 기록 ${has(cur.growth.grown)?'있음':'없음'}` : '관찰 일화(날짜·상황·행동)를 1개 이상 추가하면 사례가 구체적이 됩니다.', 2],
+    ['부모님 질문이 모두 확인되었는가?', !qs.length? 'q' : qs.every(q=>has(q.a))?'y':'n', !qs.length? '등록된 질문이 없어요. 부모님 질문이 없었는지 확인해 주세요.' : `${qs.length}개 중 답변 준비 ${qs.filter(q=>has(q.a)).length}개`, 4],
+    ['질문별 답변 전달 방식이 설정되었는가?', !qs.length?'q': qs.every(q=>q.mode)?'y':'n', !qs.length? '—' : `전달 방식 미선택 ${qs.filter(q=>!q.mode).length}개`, 4],
+    ['관찰 사실과 해석이 구분되어 있는가?', 'q', '교사가 직접 확인해 주세요. 일화 기록의 "행동"에는 본 그대로만 적습니다.', 2],
+    ['부정적이거나 단정적인 표현은 없는가?', hits.length?'n':'y', hits.length? hits.slice(0,3).map(h=>`"${h.phrase}"(${h.where})`).join(', ') : '자동 점검에서 걸린 표현이 없어요. 최종 확인은 교사가 해 주세요.', null],
+    ['안전 관련 중요한 관찰이 누락되지 않았는가?', 'q', safetyFilled(cur)? `안전·건강 영역 입력됨${cur.safety.important?' · 중요 표시됨':''}` : '안전·건강 영역이 비어 있어요. 기록할 관찰이 없는지 확인해 주세요.', 3],
+  ];
+  return html`<div className="stack">
+    <div className="pagehead"><div className="grow"><h2>자료 분석 · ${displayName(cur)}</h2><p>입력 내용을 점검하고, Claude에 붙여넣을 작성 요청문을 만든 뒤 결과를 다시 붙여넣어 리포트와 가이드에 반영합니다.</p></div></div>
+    <div className="card"><h3>상담자료 점검</h3><ul className="checklist">${items.map(([t,s,d,st],i)=>html`<li key=${i}><span className=${'ic '+s}><${Icon} n=${s==='y'?'check':s==='n'?'alert':'info'} size=${13}/></span><div style=${{flex:1}}><b>${t}</b><div className="small muted">${d}</div></div>${st&&html`<button className="btn sm" onClick=${()=>openRecord(cur.id,st)}>STEP ${st}로</button>`}</li>`)}</ul>
+      <p className="small muted" style=${{marginTop:'10px'}}>초록 표시는 입력 여부를 기준으로 한 자동 점검이며, 문장의 적절성은 교사가 최종 판단합니다.</p></div>
+    <div className="card"><h3>부모님 질문 준비 현황</h3>${qs.length? html`<div className="tablewrap"><table style=${{minWidth:'560px'}}><thead><tr><th>#</th><th>부모님 질문</th><th>답변</th><th>전달 방식</th></tr></thead><tbody>${qs.map((q,i)=>html`<tr key=${q.id}><td className="num">${i+1}</td><td>${q.q||'—'}</td><td>${has(q.a)? q.a : html`<span className="chip warn">답변 준비 필요</span>`}</td><td>${q.mode? Q_MODES.find(m=>m[0]===q.mode)[1] : html`<span className="chip warn">미선택</span>`}</td></tr>`)}</tbody></table></div>` : html`<p className="muted">등록된 질문이 없어요.</p>`}</div>
+    <${AIPanel} key=${cur.id} ctx=${ctx} rec=${cur}/>
+  </div>`;
+}
+
+/* ───────── Claude 요청문 · 결과 처리 ───────── */
+const toStr = v => Array.isArray(v) ? v.map(toStr).filter(Boolean).join('\n') : v == null ? '' : typeof v === 'object' ? Object.values(v).map(toStr).filter(Boolean).join(' ') : String(v).trim();
+const toArr = v => Array.isArray(v) ? v.map(toStr).filter(Boolean) : toStr(v).split('\n').map(s => s.trim()).filter(Boolean);
+
+const SCHEMA = `{
+  "report": {
+    "day": "어린이집에서의 하루: 등원 모습, 즐겨 하는 놀이, 친구·교사와의 상호작용, 식사·낮잠 등을 따뜻하게 소개하는 3~5문장",
+    "story": ["우리 아이가 이렇게 성장했어요: 실제 관찰 사례 중심 문단 2~3개 (문자열 배열)"],
+    "strengths": [{"title": "강점 이름(짧게)", "text": "근거가 되는 실제 모습 1~2문장"}],
+    "domains": [{"name": "발달 영역명", "text": "그 영역의 관찰 사례를 자연스럽게 정리한 2~3문장"}],
+    "safety": "안전하고 건강한 어린이집 생활을 위해: 관찰 사실, 교사 지원, 아이의 반응, 가정과 함께할 방법 (입력이 없으면 빈 문자열)",
+    "qa": [{"id": "요청문에 적힌 질문 id", "text": "리포트에 반영할 답변 (자연스러운 문장)"}],
+    "home": "가정과 함께 이어가는 성장: 어린이집과 가정이 함께할 방법",
+    "closing": "교사의 따뜻한 마무리 글 3~4문장"
+  },
+  "edu": {
+    "title": "부모교육 제목",
+    "understand": "발달 특성 이해하기: 영아기의 일반적인 발달 특성 3~4문장",
+    "tips": ["가정에서는 이렇게 도와주세요: 실천 방법 3~5개"],
+    "phrases": ["이런 말로 표현해 보세요: 실제 대화 예시 3~4개"],
+    "together": ["어린이집과 가정이 함께해요: 함께 실천할 방법 2~3개"]
+  },
+  "guide": {
+    "surveySummary": "학부모 설문 핵심 요약 (3~5줄)",
+    "obsSummary": "교사 관찰 핵심 요약 (3~5줄)",
+    "growthChange": "지난 학기 대비 성장 변화 (이전 기록이 없으면 현재 관찰 중심)",
+    "common": ["부모와 교사 관찰의 공통점"],
+    "diff": ["부모와 교사 관찰의 차이점 (없으면 빈 배열)"],
+    "topics": [{"title": "상담 핵심 주제", "text": "이 주제로 전할 내용"}],
+    "safety": "안전하고 건강한 어린이집 생활 관련 상담 내용 (입력이 없으면 빈 문자열)",
+    "concern": "부모님의 양육 고민과 상담 방향",
+    "linkage": "가정과 어린이집의 연계 지원 방법",
+    "scenario": [{"time": "0~2분", "title": "단계 이름", "text": "교사가 할 말과 확인할 내용"}]
+  }
+}`;
+
+function buildPrompt(rec) {
+  const L = [];
+  const sec = (title, fn) => {
+    const s = [];
+    fn((label, val) => { if (has(val)) s.push(`- ${label}: ${String(val).trim().replace(/\n+/g, ' / ')}`); }, s);
+    if (s.length) L.push('', '## ' + title, ...s);
+  };
+  const b = rec.basic, a = ageInfo(b.birth, b.date || null);
+  sec('영유아 기본정보', ad => { ad('이름(가명)', b.name); ad('월령', a ? a.months + '개월' : ''); ad('반', b.className); ad('담당 교사', b.teacher); ad('학기', termLabel(b.year, b.semester)); ad('기관', ORG); ad('상담 방법', b.method); });
+  sec('학부모 사전 설문지', ad => SURVEY.forEach(([k, l]) => ad(l, rec.survey[k])));
+  sec('교사 관찰기록', (ad, s) => OBS.forEach(d => {
+    d.items.forEach(([k, l]) => ad(`${d.title} · ${l}`, rec.obs[d.key][k]));
+    (rec.obs._ep[d.key] || []).forEach(e => { const t = [e.date && `날짜 ${e.date}`, e.situation && `상황 ${e.situation}`, e.behavior && `행동 ${e.behavior}`, e.support && `교사 지원 ${e.support}`, e.response && `이후 반응 ${e.response}`].filter(Boolean).join(' / '); ad(`${d.title} · 관찰 일화`, t); });
+  }));
+  sec('지난 학기 대비 성장', ad => GROWTH.forEach(([k, l]) => ad(l, rec.growth[k])));
+  sec('안전하고 건강한 어린이집 생활을 위해', ad => {
+    ad('관찰 영역', [...rec.safety.areas.filter(x => x !== '기타'), rec.safety.areas.includes('기타') ? ('기타' + (rec.safety.areaEtc ? `(${rec.safety.areaEtc})` : '')) : ''].filter(Boolean).join(', '));
+    SAFETY_Q.forEach(([k, l]) => ad(l, rec.safety[k]));
+    if (safetyFilled(rec)) ad('교사가 안전 관련 중요 관찰로 표시', rec.safety.important ? '예' : '아니오');
+  });
+  sec('상담 핵심 주제', ad => FOCUS.forEach(([k, l]) => ad(l, rec.focus[k])));
+  const qs = rec.questions.filter(q => has(q.q));
+  if (qs.length) {
+    L.push('', '## 부모님 질문 (모든 질문이 교사용 상담 가이드에 들어갑니다)');
+    qs.forEach(q => L.push(`- [id: ${q.id}] 질문: ${q.q.trim().replace(/\n+/g, ' / ')} | 교사 답변: ${has(q.a) ? q.a.trim().replace(/\n+/g, ' / ') : '(답변 미작성 - 답변을 지어내지 말 것)'} | 전달 방식: ${q.mode ? Q_MODES.find(m => m[0] === q.mode)[1] : '미선택'}`));
+  }
+  sec('양육의 어려움과 부모교육자료', ad => {
+    const c = rec.concern;
+    ad('부모님이 느끼는 양육의 어려움', c.text);
+    ad('관련 양육 주제', [...c.topics, c.topicEtc].filter(Boolean).join(', '));
+    CONCERN_Q.forEach(([k, l]) => ad(l, c[k]));
+  });
+  const photoCaps = ['main', 'play'].map(s => rec.photos[s]).filter(p => p.src && has(p.caption)).map(p => p.caption);
+
+  const reportQs = qs.filter(q => (q.mode === 'report' || q.mode === 'both') && has(q.a));
+  const genEdu = rec.concern.generate === 'yes';
+  const out = [];
+  out.push('당신은 어린이집 학부모 상담자료를 정리하는 전문 보육교사 조력자입니다.');
+  out.push('아래 [입력 자료]만을 근거로 학부모용 성장 리포트, 부모교육자료, 교사용 상담 가이드의 문장을 작성해 주세요.');
+  out.push('', '# 작성 원칙 (반드시 지켜 주세요)');
+  [
+    '입력된 내용에 없는 사실, 행동, 날짜, 수치, 대화를 절대 만들어 내지 마세요. 정보가 부족한 항목은 빈 문자열("")이나 빈 배열([])로 두세요.',
+    '관찰 사실과 교사의 해석을 구분하고, 아이의 성격을 단정하거나 다른 아이와 비교하지 마세요.',
+    '행동의 원인을 추측하지 말고, 발달 상태를 진단하거나 지연·문제 여부를 판단하지 마세요.',
+    '"문제행동", "고집이 세다", "잘 어울리지 못한다", "집중력이 없다", "집에서도 잘 지도해 주세요" 같은 표현은 쓰지 마세요.',
+    '권장 문장 예: "원하는 활동을 계속하고 싶을 때 울음이나 몸짓으로 자신의 마음을 표현하는 모습이 있습니다." / "친구의 놀이를 먼저 관찰한 뒤 관심 있는 놀잇감에 가까이 다가가는 모습을 보입니다." / "어린이집에서는 이러한 방법으로 지원하고 있으며, 가정에서도 비슷한 표현을 사용해 주시면 도움이 될 수 있습니다."',
+    '막연한 칭찬보다 입력된 실제 성장 사례를 중심으로 쓰고, 부모님을 비난하거나 일방적으로 지도를 요청하지 말고 어린이집과 가정이 함께 지원하는 방향으로 쓰세요.',
+    '안전과 관련된 중요한 관찰은 줄이거나 빠뜨리지 말고 사실 그대로 부드러운 표현으로 전달하세요.',
+    '학부모용 문장은 따뜻하고 쉬운 존댓말("~해요", "~합니다")로, 교사용 가이드는 간결한 요약체로 쓰세요.',
+    '학부모용 리포트(report, edu)에는 부모님이 설문에 적은 양육 고민을 그대로 노출하지 말고, 일반적인 발달 특성과 가정 실천 방법으로 풀어 쓰세요.',
+  ].forEach((t, i) => out.push(`${i + 1}. ${t}`));
+  out.push('', '# 분량 기준');
+  out.push('- 학부모용 성장 리포트는 A4 2페이지 분량입니다. 어린이집에서의 하루는 3~5문장, story는 문단 2~3개, strengths는 2~3개, domains는 입력이 있는 영역만 3~5개로 간결하게 쓰세요.');
+  out.push('- 부모교육자료는 A4 한 페이지 분량이며 tips는 3~5개입니다.');
+  out.push('', '# 이번 자료의 개별 지시');
+  out.push(safetyFilled(rec)
+    ? '- 안전·건강 영역이 입력되어 있습니다. report.safety와 guide.safety를 반드시 작성하고, 입력된 행동·빈도·지원 내용을 축소하거나 누락하지 마세요.'
+    : '- 안전·건강 영역은 입력이 없습니다. report.safety와 guide.safety는 빈 문자열("")로 두세요.');
+  out.push(reportQs.length
+    ? `- report.qa에는 다음 질문 id만 작성하세요: ${reportQs.map(q => q.id).join(', ')}. 교사 답변을 바탕으로 리포트 흐름에 맞게 다듬되 내용을 더하지 마세요. 그 외 질문은 qa에 넣지 마세요.`
+    : '- report.qa는 빈 배열([])로 두세요.');
+  out.push(genEdu
+    ? '- 부모교육자료를 생성합니다. 양육 고민과 관련 주제에 맞는 edu를 작성하세요. 의학적·발달적 진단이나 확인되지 않은 정보는 쓰지 마세요.'
+    : '- 부모교육자료는 생성하지 않습니다. "edu"는 null로 두세요.');
+  if (photoCaps.length) out.push(`- 첨부 사진 설명(참고용): ${photoCaps.join(' / ')}`);
+  out.push('- guide.topics는 정확히 3개, guide.scenario는 15분 상담 기준 5~6단계로 쓰세요.');
+  out.push('', '# 출력 형식', '아래 JSON 구조 하나만 코드 블록(```json)으로 출력하세요. JSON 밖에 설명 문장을 쓰지 마세요. 값은 모두 문자열(또는 지정된 배열)이며 줄바꿈은 \\n으로 표기하세요.', '```json', SCHEMA, '```');
+  out.push('', '# 입력 자료', ...L);
+  return out.join('\n');
+}
+
+/* Claude 없이: 입력한 메모를 그대로 정리한 초안 (없는 내용은 만들지 않음) */
+function draftFromInput(rec) {
+  const sn = t => { t = String(t || '').trim().replace(/\s*\n+\s*/g, ' '); return !t ? '' : /[.!?]$/.test(t) ? t : t + '.'; };
+  const join = arr => arr.map(sn).filter(Boolean).join(' ');
+  const o = rec.obs, g = rec.growth, f = rec.focus, sf = rec.safety, c = rec.concern;
+  const day = join([o.habit.meal, o.habit.nap, o.play.toys, o.play.often, o.play.focus, o.social.teacher, o.social.peerPlay]);
+  const story = [g.grown, g.newChange, g.now].map(sn).filter(Boolean);
+  if (!story.length && has(f.biggest)) story.push(sn(f.biggest));
+  const strengths = has(f.mustTell) ? [{title: '이런 모습이 빛나요', text: sn(f.mustTell)}] : [];
+  const domains = OBS.map(d => ({name: d.title, text: join(d.items.map(([k]) => o[d.key][k]).concat((o._ep[d.key] || []).map(e => e.behavior)))})).filter(d => has(d.text));
+  const safety = safetyFilled(rec) ? join([sf.situation, sf.behavior, sf.frequency, sf.support, sf.response, sf.home]) : '';
+  const home = join([c.home, sf.home, f.together]);
+  const edu = c.generate === 'yes' ? {title: c.topics[0] || '', understand: '', tips: (c.home + '\n' + c.suggest).split('\n').map(x => x.trim()).filter(Boolean), phrases: [], together: [c.suggest].filter(has)} : null;
+  const guide = {topics: FOCUS.map(([k, l]) => ({title: l, text: f[k]})).filter(t => has(t.text)).slice(0, 3)};
+  return {report: {day, story, strengths, domains, safety, qa: [], home, closing: ''}, edu, guide};
+}
+function applyDraft(ctx, rec) {
+  const {updateRecord, setModal, say, setView} = ctx;
+  const run = () => {
+    const result = normalizeAI(draftFromInput(rec));
+    updateRecord(rec.id, r => ({...r, ai: {...r.ai, raw: '', result, appliedAt: nowISO(), approved: {...r.ai.approved, report: false, guide: false}}}));
+    say('입력 내용으로 초안을 만들었어요. 빈 칸은 직접 채우고 문장을 다듬어 주세요.'); setView('report');
+  };
+  if (rec.ai.result) setModal({title: '초안으로 다시 만들까요?', danger: true, confirmLabel: '덮어쓰기', body: html`<p>지금 리포트와 가이드의 내용(Claude 결과와 직접 고친 내용)이 입력 메모 기준 초안으로 바뀝니다.</p>`, onConfirm: run});
+  else run();
+}
+function extractJSON(text) {
+  let t = String(text || '').replace(/```json/gi, '```');
+  const f = t.indexOf('{'), l = t.lastIndexOf('}');
+  if (f < 0 || l <= f) return {ok: false, error: 'JSON({ })를 찾지 못했어요. Claude의 답변 전체를 그대로 붙여넣었는지 확인해 주세요.'};
+  t = t.slice(f, l + 1);
+  const tries = [t, t.replace(/,\s*([}\]])/g, '$1'), t.replace(/[“”]/g, '"').replace(/,\s*([}\]])/g, '$1')];
+  for (const s of tries) { try { return {ok: true, data: JSON.parse(s)}; } catch (e) { /* 다음 방법 */ } }
+  return {ok: false, error: 'JSON 형식을 읽지 못했어요. 답변이 중간에 끊기지 않았는지 확인하고, 끊겼다면 Claude에 "이어서 JSON을 끝까지 출력해 주세요"라고 요청해 주세요.'};
+}
+function normalizeAI(j) {
+  const R = j.report || {}, G = j.guide || {}, E = ('edu' in j) ? j.edu : (R.edu || null);
+  const pairs = (v, a, b) => (Array.isArray(v) ? v : []).map(o => (o && typeof o === 'object') ? {[a]: toStr(o[a]), [b]: toStr(o[b])} : {[a]: '', [b]: toStr(o)}).filter(o => has(o[a]) || has(o[b]));
+  const qa = {};
+  if (Array.isArray(R.qa)) R.qa.forEach(o => { if (o && o.id) qa[o.id] = toStr(o.text); });
+  else if (R.qa && typeof R.qa === 'object') Object.entries(R.qa).forEach(([k, v]) => { qa[k] = toStr(v); });
+  const sc = (Array.isArray(G.scenario) ? G.scenario : []).map(o => ({time: toStr(o && o.time), title: toStr(o && o.title), text: toStr(o && o.text)})).filter(o => has(o.title) || has(o.text));
+  return {
+    report: {day: toStr(R.day), story: toArr(R.story), strengths: pairs(R.strengths, 'title', 'text'), domains: pairs(R.domains, 'name', 'text'), safety: toStr(R.safety), qa, home: toStr(R.home), closing: toStr(R.closing)},
+    edu: (E && typeof E === 'object') ? {title: toStr(E.title), understand: toStr(E.understand), tips: toArr(E.tips), phrases: toArr(E.phrases), together: toArr(E.together)} : null,
+    guide: {surveySummary: toStr(G.surveySummary), obsSummary: toStr(G.obsSummary), growthChange: toStr(G.growthChange), common: toArr(G.common), diff: toArr(G.diff), topics: pairs(G.topics, 'title', 'text'), safety: toStr(G.safety), concern: toStr(G.concern), linkage: toStr(G.linkage), scenario: sc},
+  };
+}
+function collectStrings(o, out = []) { if (typeof o === 'string') out.push(o); else if (Array.isArray(o)) o.forEach(x => collectStrings(x, out)); else if (o && typeof o === 'object') Object.values(o).forEach(x => collectStrings(x, out)); return out; }
+function aiWarnings(rec, res) {
+  const w = [], R = res.report, G = res.guide;
+  if (!has(R.day)) w.push('"어린이집에서의 하루"가 비어 있어요.');
+  if (!R.story.length) w.push('"우리 아이가 이렇게 성장했어요"가 비어 있어요.');
+  if (safetyFilled(rec) && !has(R.safety)) w.push('안전·건강 내용을 입력했는데 리포트의 해당 항목이 비어 있어요. 직접 작성하거나 다시 요청해 주세요.');
+  if (rec.safety.important && !has(G.safety)) w.push('안전 관련 중요 관찰이 상담 가이드에 반영되지 않았어요.');
+  if (rec.concern.generate === 'yes' && !res.edu) w.push('부모교육자료를 생성하도록 선택했지만 결과에 edu가 없어요.');
+  const miss = rec.questions.filter(q => (q.mode === 'report' || q.mode === 'both') && has(q.a) && !has(res.report.qa[q.id]));
+  if (miss.length) w.push(`리포트에 반영하기로 한 질문 ${miss.length}개는 Claude 결과에 없어서 교사 답변 원문이 그대로 들어가요. 리포트 편집에서 다듬어 주세요.`);
+  if (G.topics.length && G.topics.length !== 3) w.push(`상담 핵심 주제가 ${G.topics.length}개예요(권장 3개).`);
+  const seen = new Set();
+  collectStrings(res).forEach(t => CAUTION.forEach(([p, tip]) => { if (t.includes(p) && !seen.has(p)) { seen.add(p); w.push(`결과에 "${p}" 표현이 있어요. ${tip}`); } }));
+  return w;
+}
+
+function AIPanel({ctx, rec}) {
+  const {updateRecord, setModal, say, setView} = ctx;
+  const prompt = useMemo(() => buildPrompt(rec), [rec]);
+  const [paste, setPaste] = useState(rec.ai.raw || '');
+  const [err, setErr] = useState('');
+  const pRef = useRef();
+  const res = rec.ai.result;
+  const warns = useMemo(() => res ? aiWarnings(rec, res) : [], [rec, res]);
+  const copy = async () => { const ok = await copyText(prompt, pRef.current); say(ok ? '요청문을 복사했어요. Claude 대화창에 붙여넣어 주세요.' : '자동 복사가 막혀 있어요. 선택된 내용을 Ctrl+C로 복사해 주세요.'); };
+  const apply = () => {
+    const p = extractJSON(paste);
+    if (!p.ok) { setErr(p.error); return; }
+    if (!p.data.report && !p.data.guide) { setErr('"report"나 "guide" 항목이 없어요. 요청문의 출력 형식대로 답했는지 확인해 주세요.'); return; }
+    setErr('');
+    const result = normalizeAI(p.data);
+    const doApply = () => { updateRecord(rec.id, r => ({...r, ai: {...r.ai, raw: paste, result, appliedAt: nowISO(), approved: {report: false, guide: false, after: !!r.ai.approved.after}}})); say('Claude 결과를 반영했어요. 리포트 편집에서 검토해 주세요.'); };
+    if (res) setModal({title: '결과를 다시 반영할까요?', danger: true, confirmLabel: '덮어쓰기', body: html`<p>리포트와 상담 가이드에서 직접 수정한 내용이 새 결과로 바뀌고, 검토 승인도 해제됩니다.</p>`, onConfirm: doApply});
+    else doApply();
+  };
+  const clear = () => setModal({title: '반영된 결과를 지울까요?', danger: true, confirmLabel: '지우기', body: html`<p>리포트와 가이드의 Claude 작성 내용과 수정 내용이 지워집니다. 입력한 상담자료는 그대로 남아요.</p>`, onConfirm: () => { updateRecord(rec.id, r => ({...r, ai: {...emptyAI(), raw: r.ai.raw}})); say('결과를 지웠어요.'); }});
+  return html`<div className="stack">
+    <div className="card stack"><div><h3>Claude 없이 바로 초안 만들기</h3><p className="muted small">입력한 메모를 문장으로 이어 붙여 리포트·가이드 초안을 바로 만듭니다. 입력하지 않은 내용은 비워 두고, 문장은 직접 고칠 수 있어요. 더 매끄러운 문장이 필요하면 아래 Claude 방식을 쓰세요.</p></div>
+      <div><button className="btn primary" onClick=${() => applyDraft(ctx, rec)}><${Icon} n="doc"/>입력 내용으로 초안 만들기</button></div></div>
+    <div className="card stack">
+      <div><h3>① Claude용 작성 요청문</h3>
+        <p className="muted small">입력한 상담자료로 만든 요청문입니다. 복사해서 Claude 대화창에 붙여넣으면 JSON 형식으로 결과를 받을 수 있어요. 이 프로그램은 Claude를 직접 호출하지 않으며, 입력하지 않은 내용은 만들지 않도록 지시가 들어 있습니다.</p></div>
+      <div className="notice warn small"><${Icon} n="alert"/><div>요청문에는 입력한 영유아 정보가 그대로 포함됩니다. 가명을 쓰고, 기관의 개인정보 처리 기준과 동의 범위를 확인한 뒤 사용해 주세요.</div></div>
+      <textarea id="ai-prompt" ref=${pRef} className="code" readOnly value=${prompt} style=${{minHeight:'220px',maxHeight:'360px'}}></textarea>
+      <div className="row"><button className="btn primary" onClick=${copy}><${Icon} n="copy"/>요청문 복사</button><span className="muted small">${prompt.length.toLocaleString()}자</span></div>
+    </div>
+    <div className="card stack">
+      <div><h3>② Claude 결과 붙여넣기</h3><p className="muted small">Claude의 답변 전체를 그대로 붙여넣어 주세요. 코드 블록 표시가 있어도 괜찮아요.</p></div>
+      <textarea id="ai-paste" className="code" placeholder="여기에 Claude의 답변을 붙여넣기" value=${paste} onChange=${e=>{ setPaste(e.target.value); setErr(''); }} style=${{minHeight:'150px',maxHeight:'300px'}}></textarea>
+      ${err && html`<div className="notice warn"><${Icon} n="alert"/><div>${err}</div></div>`}
+      <div className="row"><button className="btn primary" disabled=${!paste.trim()} onClick=${apply}><${Icon} n="check"/>결과 반영하기</button>
+        ${res && html`<button className="btn" onClick=${()=>setView('report')}>학부모용 리포트 보기</button><button className="btn" onClick=${()=>setView('guide')}>상담 가이드 보기</button><button className="btn danger" onClick=${clear}>반영 결과 지우기</button>`}</div>
+      ${res && html`<div className="notice sage"><${Icon} n="check"/><div><b>${fmtDateTime(rec.ai.appliedAt)}에 반영했어요.</b> 리포트 문단 ${res.report.story.length + (has(res.report.day)?1:0)}개 · 강점 ${res.report.strengths.length}개 · 발달 영역 ${res.report.domains.length}개 · 부모교육자료 ${res.edu?'있음':'없음'} · 상담 시나리오 ${res.guide.scenario.length}단계</div></div>`}
+      ${res && warns.length>0 && html`<div className="notice apricot"><${Icon} n="alert"/><div><b>확인이 필요한 부분</b><ul style=${{margin:'4px 0 0',paddingLeft:'18px'}}>${warns.map((w,i)=>html`<li key=${i}>${w}</li>`)}</ul></div></div>`}
+    </div>
+  </div>`;
+}
+
+/* ───────── 편집 가능한 문서 요소 ───────── */
+function Ed({value, onChange, tag = 'p', cls = '', ph = '내용을 입력하세요'}) {
+  const ref = useRef();
+  React.useLayoutEffect(() => { const el = ref.current; if (el && document.activeElement !== el && el.innerText !== (value || '')) el.innerText = value || ''; });
+  return React.createElement(tag, {
+    ref, className: 'ed ' + cls, contentEditable: true, suppressContentEditableWarning: true, spellCheck: false, 'data-ph': ph,
+    onBlur: e => { const t = e.currentTarget.innerText.replace(/\n{3,}/g, '\n\n').trim(); if (t !== (value || '')) onChange(t); },
+    onPaste: e => { e.preventDefault(); const t = (e.clipboardData || window.clipboardData).getData('text'); document.execCommand('insertText', false, t); },
+  });
+}
+function EdList({items, onChange, ph, add = '문단 추가', ordered, cls = ''}) {
+  const Tag = ordered ? 'ol' : 'ul';
+  return html`<div>
+    <${Tag} className=${(ordered ? 'rp-ol ' : 'rp-ul ') + cls}>${items.map((t, i) => html`<li key=${i} className="blk"><${Ed} tag="span" value=${t} ph=${ph} onChange=${v => onChange(items.map((x, k) => k === i ? v : x))}/><button className="delx noprint" title="삭제" onClick=${() => onChange(items.filter((_, k) => k !== i))}>×</button></li>`)}</${Tag}>
+    <button className="addx noprint" onClick=${() => onChange([...items, ''])}>+ ${add}</button></div>`;
+}
+function EdParas({items, onChange, ph, add = '문단 추가'}) {
+  return html`<div className="rp-list">${items.map((t, i) => html`<div key=${i} className="blk"><${Ed} cls="rp-p" value=${t} ph=${ph} onChange=${v => onChange(items.map((x, k) => k === i ? v : x))}/><button className="delx noprint" title="문단 삭제" onClick=${() => onChange(items.filter((_, k) => k !== i))}>×</button></div>`)}
+    <div><button className="addx noprint" onClick=${() => onChange([...items, ''])}>+ ${add}</button></div></div>`;
+}
+function PaperSprig() {
+  return html`<svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true"><path d="M30 60C31 46 29 32 33 16" fill="none" stroke="var(--paper-sage-deep)" strokeWidth="3" strokeLinecap="round"/><path d="M31 44C21 43 14 36 13 28 23 28 30 34 31 44Z" fill="var(--paper-sage)"/><path d="M32 33C41 31 47 25 48 17 39 18 33 24 32 33Z" fill="var(--paper-sage)" opacity=".7"/><g fill="var(--paper-apricot)"><circle cx="33" cy="9" r="4"/><circle cx="39" cy="12" r="4"/><circle cx="27" cy="12" r="4"/><circle cx="30" cy="18" r="3.8"/><circle cx="36" cy="18" r="3.8"/></g><circle cx="33" cy="13.5" r="2.6" fill="var(--paper)"/></svg>`;
+}
+function A4({label, cls = '', tight, onTight, children}) {
+  const flow = useRef(), page = useRef(); const [over, setOver] = useState(false);
+  useEffect(() => {
+    const el = flow.current, pg = page.current; if (!el || !pg) return;
+    const chk = () => { const cs = getComputedStyle(pg); const avail = 1123 - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom); setOver(el.offsetHeight > avail + 1); };
+    chk(); if (!window.ResizeObserver) return;
+    const ro = new ResizeObserver(chk); ro.observe(el); return () => ro.disconnect();
+  }, [tight]);
+  return html`<div className="pagebox"><div className="pagebar noprint"><b>${label}</b>${over ? html`<span className="chip danger"><${Icon} n="alert" size=${13}/>A4 한 장을 넘어요. 글자를 줄이지 말고 분량을 줄이거나 여백 줄이기를 켜 주세요</span>` : html`<span className="chip ok"><${Icon} n="check" size=${13}/>A4 한 장 안에 들어가요</span>`}
+      ${onTight && html`<label className="row small" style=${{gap:'5px',cursor:'pointer'}}><input type="checkbox" checked=${!!tight} onChange=${e => onTight(e.target.checked)} style=${{accentColor:'var(--sage-deep)'}}/>여백 줄이기 (글자 크기는 그대로)</label>`}</div>
+    <div ref=${page} className=${'page ' + cls + (tight ? ' tight' : '') + (over ? ' over' : '')}><div className="flow" ref=${flow}>${children}</div></div></div>`;
+}
+function ReportPhoto({p, h}) {
+  if (!p.src) return null;
+  const ratio = p.ratio === 'orig' ? (p.w && p.h ? `${p.w} / ${p.h}` : '4 / 3') : p.ratio.replace(':', ' / ');
+  return html`<figure className="rphoto"><div className="rframe" style=${{aspectRatio: ratio, height: h + 'px'}}><img src=${p.src} alt=${p.caption || ''} style=${{display:'block',width:'100%',height:'100%',maxWidth:'none',objectFit:p.fit,objectPosition:`${p.x}% ${p.y}%`,transform:`scale(${p.zoom / 100})`,transformOrigin:`${p.x}% ${p.y}%`}}/></div>${has(p.caption) && html`<figcaption>${p.caption}</figcaption>`}</figure>`;
+}
+function printDoc(mode, say) {
+  if (document.querySelector('.page.over')) say('A4 한 장을 넘는 페이지가 있어요. 내용은 지워지지 않고 다음 장으로 넘어가 인쇄돼요.');
+  const el = document.documentElement; el.setAttribute('data-print', mode);
+  const done = () => { el.removeAttribute('data-print'); window.removeEventListener('afterprint', done); };
+  window.addEventListener('afterprint', done);
+  try { window.print(); } catch (e) { done(); say('이 화면에서는 인쇄가 막혀 있어요. Chrome·Edge에서 HTML 파일을 직접 열어 사용해 주세요.'); return; }
+  if (inIframe) setTimeout(() => say('인쇄 창이 열리지 않았다면 미리보기 창에서는 막힌 거예요. Chrome·Edge에서 HTML 파일을 직접 열어 주세요.'), 600);
+}
+function NeedChild({ctx, what}) {
+  const {db, setCurId, newRecord} = ctx; const list = termRecords(db);
+  return html`<div className="card empty-state"><${Sprig} size=${56}/><h3>${what}을 만들 영유아를 선택해 주세요</h3>
+    <div className="row" style=${{justifyContent:'center'}}>${list.map(r => html`<button key=${r.id} className="btn soft" onClick=${() => setCurId(r.id)}>${displayName(r)}</button>`)}<button className="btn primary" onClick=${newRecord}><${Icon} n="plus"/>새 영유아 등록</button></div></div>`;
+}
+function NoResult({ctx, rec, what}) {
+  return html`<div className="card empty-state"><${Sprig} size=${56}/><h3>아직 Claude 결과가 반영되지 않았어요</h3>
+    <p>${displayName(rec)}의 ${what}은 "자료 분석"에서 요청문을 만들어 Claude에 붙여넣고, 받은 결과를 다시 붙여넣으면 채워집니다.</p>
+    <div className="row" style=${{justifyContent:'center'}}><button className="btn primary" onClick=${() => applyDraft(ctx, rec)}><${Icon} n="doc"/>입력 내용으로 초안 바로 만들기</button><button className="btn" onClick=${() => ctx.setView('analysis')}><${Icon} n="chart"/>Claude 방식으로 (자료 분석)</button></div></div>`;
+}
+function DocToolbar({ctx, rec, kind, extra}) {
+  const {updateRecord, say} = ctx; const ok = rec.ai.approved[kind];
+  const label = kind === 'report' ? '학부모용 성장 리포트' : '교사용 상담 가이드';
+  const setOk = v => updateRecord(rec.id, r => ({...r, status: (kind === 'report' && v && (r.status === 'draft' || r.status === 'done')) ? 'reviewed' : r.status, ai: {...r.ai, approved: {...r.ai.approved, [kind]: v}}}));
+  return html`<div className="card noprint" style=${{marginBottom:'16px'}}>
+    <div className="row" style=${{gap:'14px'}}>
+      <label className="row" style=${{gap:'8px',cursor:'pointer'}}><input type="checkbox" id=${'ok-'+kind} checked=${ok} onChange=${e=>setOk(e.target.checked)} style=${{accentColor:'var(--sage-deep)',width:'18px',height:'18px'}}/><b>교사 검토·승인 완료</b></label>
+      <span className="muted small">문장을 모두 확인하고 수정한 뒤 체크하면 출력할 수 있어요${kind==='report'?' (승인 시 진행 상태가 "교사 검토 완료"로 바뀌어요)':''}.</span>
+      <span style=${{marginLeft:'auto'}} className="row">${extra}<button className="btn primary" disabled=${!ok} onClick=${()=>printDoc('all',say)}><${Icon} n="print"/>${label} 인쇄·PDF 저장</button></span>
+    </div>
+    ${inIframe && html`<p className="small muted" style=${{marginTop:'8px'}}>미리보기 창에서는 인쇄가 막혀 있어요. Chrome이나 Edge에서 이 프로그램의 HTML 파일을 직접 열면 인쇄 창에서 "PDF로 저장"을 고를 수 있어요. 인쇄 옵션에서 "배경 그래픽"을 켜면 색이 그대로 나와요.</p>`}
+    <p className="small muted" style=${{marginTop:'6px'}}>문장을 눌러 직접 고치고, 마우스를 올리면 나타나는 ×로 문단을 지울 수 있어요. 고친 내용은 자동으로 저장됩니다.</p>
+  </div>`;
+}
+
+/* ───────── 학부모용 성장 리포트 ───────── */
+function ReportView({ctx}) {
+  const {cur: rec, setField, updateRecord, say} = ctx;
+  if (!rec) return html`<${NeedChild} ctx=${ctx} what="리포트"/>`;
+  const res = rec.ai.result;
+  if (!res) return html`<${NoResult} ctx=${ctx} rec=${rec} what="학부모용 성장 리포트"/>`;
+  const R = res.report, E = res.edu, T = rec.ai.titles, b = rec.basic;
+  const tp = {tight: !!rec.ai.tight.report, onTight: v => setField(rec.id, ['ai', 'tight', 'report'], v)};
+  const showEdu = rec.concern.generate === 'yes';
+  const setR = (key, v) => setField(rec.id, ['ai', 'result', 'report', key], v);
+  const setE = (key, v) => setField(rec.id, ['ai', 'result', 'edu', key], v);
+  const setT = (k, v) => setField(rec.id, ['ai', 'titles', k], v);
+  const safe = safetyFilled(rec);
+  const repQs = rec.questions.filter(q => (q.mode === 'report' || q.mode === 'both') && has(q.q) && has(q.a));
+  const setPair = (key, i, f, v) => setR(key, R[key].map((o, k) => k === i ? {...o, [f]: v} : o));
+  const delPair = (key, i) => setR(key, R[key].filter((_, k) => k !== i));
+  const eduEdit = showEdu && !E;
+  const addEdu = () => updateRecord(rec.id, r => ({...r, ai: {...r.ai, result: {...r.ai.result, edu: {title: '', understand: '', tips: [], phrases: [], together: []}}}}));
+  const ageT = ageInfo(b.birth, b.date || null);
+  return html`<div className="printroot">
+    <div className="pagehead"><div className="grow"><h2>학부모용 성장 리포트 · ${displayName(rec)}</h2><p>${termLabel(b.year, b.semester)} · A4 ${showEdu ? '3' : '2'}페이지 (부모교육자료 ${showEdu ? '포함' : '제외'})</p></div>
+      <button className="btn" onClick=${() => ctx.setView('analysis')}>요청문·결과 붙여넣기</button></div>
+    <${DocToolbar} ctx=${ctx} rec=${rec} kind="report" extra=${showEdu && E ? html`<button className="btn" disabled=${!rec.ai.approved.report} onClick=${() => printDoc('edu', say)}>부모교육자료만 인쇄</button>` : null}/>
+    ${eduEdit && html`<div className="notice apricot noprint" style=${{marginBottom:'14px'}}><${Icon} n="alert"/><div style=${{flex:1}}>부모교육자료 생성을 선택했지만 Claude 결과에 내용이 없어요. 요청문을 다시 만들어 받거나 아래에서 직접 작성할 수 있어요.</div><button className="btn sm" onClick=${addEdu}>빈 부모교육자료 만들기</button></div>`}
+    <div className="docs">
+      <${A4} label="1페이지 · 우리 아이 성장 이야기" cls="rp pg-main" ...${tp}>
+        <div className="rp-top"><${PaperSprig}/><span>${ORG} · ${termLabel(b.year, b.semester)}</span></div>
+        <${Ed} tag="h2" cls="rp-title" value=${T.p1} onChange=${v => setT('p1', v)}/>
+        <div className="rp-cols">
+          <div className="rp-left">
+            <dl className="rp-info"><dt>이름</dt><dd>${displayName(rec)}</dd><dt>월령</dt><dd>${ageT ? ageT.months + '개월' : '—'}</dd><dt>반</dt><dd>${b.className || '—'}</dd><dt>담당 교사</dt><dd>${b.teacher || '—'}</dd></dl>
+            <h4>어린이집에서의 하루</h4>
+            <${Ed} cls="rp-p" value=${R.day} onChange=${v => setR('day', v)} ph="어린이집에서의 하루를 3~5문장으로 소개해 주세요"/>
+          </div>
+          ${rec.photos.main.src && html`<${ReportPhoto} p=${rec.photos.main} h=${230}/>`}
+        </div>
+        <h4>우리 아이가 이렇게 성장했어요</h4>
+        <${EdParas} items=${R.story} onChange=${v => setR('story', v)} ph="실제 관찰 사례를 적어 주세요"/>
+        <h4>우리 아이의 빛나는 강점</h4>
+        <div className="rp-strengths">${R.strengths.map((s, i) => html`<div key=${i} className="rp-card blk"><${Ed} tag="b" value=${s.title} ph="강점" onChange=${v => setPair('strengths', i, 'title', v)}/><${Ed} cls="rp-p" value=${s.text} ph="근거가 되는 모습" onChange=${v => setPair('strengths', i, 'text', v)}/><button className="delx noprint" onClick=${() => delPair('strengths', i)}>×</button></div>`)}</div>
+        <button className="addx noprint" onClick=${() => setR('strengths', [...R.strengths, {title: '', text: ''}])}>+ 강점 추가</button>
+      </${A4}>
+
+      <${A4} label="2페이지 · 함께 자라는 우리 아이" cls="rp pg-main" ...${tp}>
+        <${Ed} tag="h2" cls="rp-title" value=${T.p2} onChange=${v => setT('p2', v)}/>
+        ${rec.photos.play.src && html`<div style=${{display:'grid',justifyItems:'center',marginBottom:'6px'}}><${ReportPhoto} p=${rec.photos.play} h=${160}/></div>`}
+        <h4>발달 영역별 성장 이야기</h4>
+        ${R.domains.map((d, i) => html`<div key=${i} className="rp-domain blk"><${Ed} tag="b" value=${d.name} ph="영역" onChange=${v => setPair('domains', i, 'name', v)}/><${Ed} cls="rp-p" value=${d.text} ph="관찰 사례" onChange=${v => setPair('domains', i, 'text', v)}/><button className="delx noprint" onClick=${() => delPair('domains', i)}>×</button></div>`)}
+        <button className="addx noprint" onClick=${() => setR('domains', [...R.domains, {name: '', text: ''}])}>+ 영역 추가</button>
+        ${safe && html`<div className="rp-safe"><h4>안전하고 건강한 어린이집 생활을 위해</h4><${Ed} cls="rp-p" value=${R.safety} onChange=${v => setR('safety', v)} ph="관찰한 내용, 교사의 지원, 가정과 함께할 방법을 직접 작성해 주세요"/></div>`}
+        ${repQs.length > 0 && html`<h4>부모님이 궁금해하시는 이야기</h4><div className="rp-qa">${repQs.map(q => html`<div key=${q.id}><div className="q">Q. ${q.q}</div><${Ed} cls="rp-p" value=${(q.id in R.qa) ? R.qa[q.id] : q.a} onChange=${v => setR('qa', {...R.qa, [q.id]: v})}/></div>`)}</div>`}
+        <h4>가정과 함께 이어가는 성장</h4>
+        <${Ed} cls="rp-p" value=${R.home} onChange=${v => setR('home', v)} ph="어린이집과 가정이 함께할 방법을 적어 주세요"/>
+        <div className="rp-close"><${Ed} cls="rp-p" value=${R.closing} onChange=${v => setR('closing', v)} ph="교사의 따뜻한 마무리 글"/><div className="rp-sign">${ORG} ${b.teacher || ''} 선생님 드림</div></div>
+      </${A4}>
+
+      ${showEdu && E && html`<${A4} label="3페이지 · 함께하는 부모교육 (A4 한 장)" cls="rp pg-edu" ...${tp}>
+        <div className="rp-top"><${PaperSprig}/><span>${ORG} · 함께하는 부모교육</span></div>
+        <${Ed} tag="h2" cls="rp-title" value=${E.title || T.p3} ph=${T.p3} onChange=${v => setE('title', v)}/>
+        <h4>발달 특성 이해하기</h4>
+        <${Ed} cls="rp-p" value=${E.understand} onChange=${v => setE('understand', v)} ph="영아기의 일반적인 발달 특성을 쉽게 설명해 주세요"/>
+        <h4>가정에서는 이렇게 도와주세요</h4>
+        <${EdList} ordered=${true} items=${E.tips} onChange=${v => setE('tips', v)} ph="실천 방법" add="방법 추가"/>
+        <h4>이런 말로 표현해 보세요</h4>
+        <${EdList} items=${E.phrases} onChange=${v => setE('phrases', v)} ph="대화 예시" add="예시 추가" cls="rp-sayl"/>
+        <h4>어린이집과 가정이 함께해요</h4>
+        <${EdList} items=${E.together} onChange=${v => setE('together', v)} ph="함께할 방법" add="방법 추가"/>
+      </${A4}>`}
+    </div>
+  </div>`;
+}
+
+/* ───────── 교사용 상담 가이드 ───────── */
+function defaultScenario(rec) {
+  const n = rec.questions.length, big = rec.focus.biggest;
+  return [
+    {time: '0~2분', title: '따뜻한 인사', text: '시간을 내 주신 것에 감사드리고, 오늘 나눌 이야기(성장, 부모님 질문, 가정 연계)를 간단히 안내합니다.'},
+    {time: '2~5분', title: '아이의 성장 이야기', text: has(big) ? `가장 큰 성장 변화로 "${big}"을(를) 실제 관찰 사례와 함께 전합니다.` : '실제 관찰 사례 1~2가지를 중심으로 성장 이야기를 전합니다.'},
+    {time: '5~8분', title: '부모님 관찰 듣기', text: '가정에서 보시는 모습을 먼저 여쭙고, 어린이집 관찰과 겹치는 점과 다른 점을 함께 이야기합니다.'},
+    {time: '8~12분', title: '부모님 질문 나누기', text: n ? `준비한 질문 ${n}개를 순서대로 다룹니다. 답변 준비가 필요한 질문은 확인한 사실만 말씀드립니다.` : '부모님 질문이 있는지 먼저 여쭙습니다.'},
+    {time: '12~14분', title: '가정과 함께하는 방법', text: '어린이집에서 하는 지원과 가정에서 해 보실 수 있는 방법을 함께 정합니다.'},
+    {time: '14~15분', title: '마무리', text: '오늘 이야기를 요약하고, 추가로 궁금한 점과 다음 소통 방법을 안내합니다.'},
+  ];
+}
+function GuideView({ctx}) {
+  const {cur: rec, setField, updateRecord, say} = ctx;
+  if (!rec) return html`<${NeedChild} ctx=${ctx} what="상담 가이드"/>`;
+  const res = rec.ai.result, G = res ? res.guide : null, b = rec.basic;
+  const tp = {tight: !!rec.ai.tight.guide, onTight: v => setField(rec.id, ['ai', 'tight', 'guide'], v)};
+  const gset = (k, v) => setField(rec.id, ['ai', 'result', 'guide', k], v);
+  const age = ageInfo(b.birth, b.date || null);
+  const qs = rec.questions.filter(q => has(q.q));
+  const modeShort = {talk: '상담에서 말로', report: '리포트 반영', both: '리포트+상담'};
+  const safe = safetyFilled(rec);
+  const rawLines = (pairs, getter) => pairs.map(([k, l]) => [l, getter(k)]).filter(([, v]) => has(v));
+  const T = (k, fallback, ph) => (G && has(G[k])) ? html`<${Ed} cls="g-p" value=${G[k]} ph=${ph} onChange=${v => gset(k, v)}/>` : fallback;
+  const none = html`<p className="g-ph">입력된 내용이 없어요.</p>`;
+  const srvLines = rawLines(SURVEY, k => rec.survey[k]);
+  const obsLines = []; OBS.forEach(d => { d.items.forEach(([k, l]) => { if (has(rec.obs[d.key][k])) obsLines.push([`${d.title} · ${l}`, rec.obs[d.key][k]]); }); (rec.obs._ep[d.key] || []).forEach(e => { if (has(e.behavior)) obsLines.push([`${d.title} · 일화${e.date ? ' ' + e.date : ''}`, e.behavior]); }); });
+  const growthLines = rawLines(GROWTH, k => rec.growth[k]);
+  const focusLines = rawLines(FOCUS, k => rec.focus[k]);
+  const ul = lines => lines.length ? html`<ul className="g-ul">${lines.map(([l, v], i) => html`<li key=${i}><b>${l}</b> ${v}</li>`)}</ul>` : none;
+  const scenario = (G && G.scenario.length) ? G.scenario : null;
+  const qNeed = qs.filter(q => !has(q.a)).length;
+  const eduTitle = rec.concern.generate === 'yes' ? ((res && res.edu && has(res.edu.title)) ? res.edu.title : '(제목 미정 · 리포트 편집에서 작성)') : rec.concern.generate === 'no' ? '제공하지 않음' : '미선택';
+  const checks = [
+    ['q', '부모님 질문과 답변 전달 방식을 모두 확인했다', qNeed ? `답변 준비 필요 ${qNeed}개` : ''],
+    ['safe', '안전 관련 관찰을 빠뜨리지 않고 안내할 준비가 되었다', safe ? '' : '입력된 안전·건강 내용 없음'],
+    ['report', '학부모용 리포트를 검토하고 승인했다', rec.ai.approved.report ? '' : '승인 전'],
+    ['edu', '부모교육자료(또는 제외 여부)를 확인했다', ''],
+    ['tone', '단정하거나 비교하는 표현 없이 관찰 사실 중심으로 말한다', ''],
+    ['consent', '개인정보·사진 사용 동의 범위를 확인했다', ''],
+    ['out', '리포트와 가이드를 출력했다', ''],
+    ['after', '상담 후 결과 기록지 작성을 준비했다', ''],
+  ];
+  const setCk = (k, v) => setField(rec.id, ['ai', 'check', k], v);
+  const sc = (i, f, v) => gset('scenario', G.scenario.map((o, k) => k === i ? {...o, [f]: v} : o));
+  const banner = html`<div className="g-banner"><${Icon} n="alert" size=${14}/>교사용 내부 자료 · 학부모에게 전달하지 않습니다 · ${rec.basic.name ? displayName(rec) : ''} ${termLabel(b.year, b.semester)}</div>`;
+  return html`<div className="printroot">
+    <div className="pagehead"><div className="grow"><h2>교사용 상담 가이드 · ${displayName(rec)}</h2><p>A4 3페이지 · 부모님 질문은 앞부분에 모두 표시됩니다. ${res ? '' : 'Claude 결과를 반영하면 요약·시나리오 등이 채워져요.'}</p></div>
+      ${!res && html`<button className="btn primary" onClick=${() => ctx.setView('analysis')}>요청문·결과 붙여넣기</button>`}</div>
+    <${DocToolbar} ctx=${ctx} rec=${rec} kind="guide"/>
+    <div className="docs">
+      <${A4} label="가이드 1페이지 · 기본정보와 부모님 질문" cls="guide" ...${tp}>
+        ${banner}
+        <h2 className="g-title">교사용 상담 가이드</h2>
+        <section className="gs"><h4><span className="gn">1</span>영유아 기본정보</h4>
+          <dl className="g-kv"><dt>이름</dt><dd>${displayName(rec)}</dd><dt>월령</dt><dd>${age ? age.months + '개월' : '—'}</dd><dt>반</dt><dd>${b.className || '—'}</dd><dt>담당</dt><dd>${b.teacher || '—'}</dd>
+          <dt>상담일</dt><dd>${b.date ? fmtDate(b.date) : '—'}</dd><dt>시간</dt><dd>${b.time || '—'}</dd><dt>방법</dt><dd>${b.method || '—'}</dd><dt>학기</dt><dd>${b.year}-${b.semester}</dd></dl></section>
+        <section className="gs"><h4><span className="gn">2</span>부모님이 가장 궁금해하시는 이야기 ${qs.length ? html`<span className="g-tag">${qs.length}개</span>` : ''}</h4>
+          ${qs.length ? html`<ol className="g-ul" style=${{listStyle:'decimal'}}>${qs.map(q => html`<li key=${q.id}>${q.q} <span className=${'g-tag' + (q.mode ? '' : ' warn')}>${q.mode ? modeShort[q.mode] : '전달 방식 미선택'}</span></li>`)}</ol>` : html`<p className="g-ph">등록된 부모님 질문이 없어요. 상담 시작 때 직접 여쭤봐 주세요.</p>`}</section>
+        <section className="gs"><h4><span className="gn">3</span>부모님 질문별 교사의 준비 답변</h4>
+          ${qs.length ? qs.map((q, i) => html`<div key=${q.id} className="g-q"><b>Q${i + 1}. ${q.q}</b> <span className=${'g-tag' + (q.mode ? '' : ' warn')}>${q.mode ? Q_MODES.find(m => m[0] === q.mode)[1] : '전달 방식 미선택'}</span>
+            <div className="a">${has(q.a) ? q.a : html`<span className="g-tag red">답변 준비 필요</span>`}</div></div>`) : html`<p className="g-ph">—</p>`}</section>
+      </${A4}>
+
+      <${A4} label="가이드 2페이지 · 요약과 핵심 주제" cls="guide" ...${tp}>
+        <section className="gs" style=${{marginTop:0}}><h4><span className="gn">4</span>학부모 설문 핵심 요약</h4>${T('surveySummary', ul(srvLines.slice(0, 6)), '설문 요약')}</section>
+        <section className="gs"><h4><span className="gn">5</span>교사 관찰 핵심 요약</h4>${T('obsSummary', ul(obsLines.slice(0, 8)), '관찰 요약')}</section>
+        <section className="gs"><h4><span className="gn">6</span>지난 학기 대비 성장 변화</h4>${T('growthChange', ul(growthLines), '성장 변화')}</section>
+        <section className="gs"><h4><span className="gn">7</span>부모와 교사 관찰의 공통점과 차이점</h4>
+          ${G ? html`<div className="g-2"><div className="g-box"><b>공통점</b><${EdList} items=${G.common} onChange=${v => gset('common', v)} add="추가" ph="공통점"/></div><div className="g-box"><b>차이점</b><${EdList} items=${G.diff} onChange=${v => gset('diff', v)} add="추가" ph="차이점"/></div></div>` : html`<p className="g-ph">Claude 결과를 반영하면 표시돼요.</p>`}</section>
+        <section className="gs"><h4><span className="gn">8</span>상담 핵심 주제 3가지</h4>
+          ${(G && G.topics.length) ? G.topics.map((t, i) => html`<div key=${i} className="g-q blk"><${Ed} tag="b" value=${t.title} ph="주제" onChange=${v => gset('topics', G.topics.map((o, k) => k === i ? {...o, title: v} : o))}/><${Ed} cls="g-p" value=${t.text} ph="전할 내용" onChange=${v => gset('topics', G.topics.map((o, k) => k === i ? {...o, text: v} : o))}/><button className="delx noprint" onClick=${() => gset('topics', G.topics.filter((_, k) => k !== i))}>×</button></div>`)
+            : (focusLines.length ? ul(focusLines.slice(0, 3)) : none)}</section>
+      </${A4}>
+
+      <${A4} label="가이드 3페이지 · 연계 지원과 상담 진행" cls="guide" ...${tp}>
+        <section className="gs" style=${{marginTop:0}}><h4><span className="gn">9</span>안전하고 건강한 어린이집 생활 관련 상담 내용 ${rec.safety.important ? html`<span className="g-tag red">안전 관련 중요 관찰</span>` : ''}</h4>
+          ${safe ? T('safety', ul(rawLines([...SAFETY_Q.map(([k, l]) => [k, l])], k => rec.safety[k])), '안전·건강 상담 내용') : html`<p className="g-ph">입력된 내용이 없어요. (리포트에서도 생략됩니다)</p>`}</section>
+        <section className="gs"><h4><span className="gn">10</span>부모님의 양육 고민과 상담 방향</h4>
+          ${T('concern', has(rec.concern.text) || rec.concern.topics.length ? html`<ul className="g-ul"><li><b>고민</b> ${rec.concern.text || '—'}</li><li><b>주제</b> ${[...rec.concern.topics, rec.concern.topicEtc].filter(Boolean).join(', ') || '—'}</li></ul>` : none, '상담 방향')}</section>
+        <section className="gs"><h4><span className="gn">11</span>가정과 어린이집의 연계 지원 방법</h4>
+          ${T('linkage', ul([['가정 실천', rec.concern.home], ['안전·건강', rec.safety.home], ['함께 지원', rec.focus.together]].filter(([, v]) => has(v))), '연계 지원 방법')}</section>
+        <section className="gs"><h4><span className="gn">12</span>제공 예정인 부모교육자료</h4><p style=${{margin:0}}>${eduTitle}</p></section>
+        <section className="gs"><h4><span className="gn">13</span>15분 상담 진행 시나리오 ${scenario ? '' : html`<span className="g-tag">기본 흐름</span>`}</h4>
+          ${(scenario || defaultScenario(rec)).map((s, i) => html`<div key=${i} className="g-sc blk"><div className="t">${scenario ? html`<${Ed} tag="span" value=${s.time} ph="시간" onChange=${v => sc(i, 'time', v)}/>` : s.time}</div><div>${scenario ? html`<${Ed} tag="b" value=${s.title} ph="단계" onChange=${v => sc(i, 'title', v)}/>` : html`<b>${s.title}</b>`} ${scenario ? html`<${Ed} cls="g-p" value=${s.text} ph="할 말" onChange=${v => sc(i, 'text', v)}/>` : html`<span>${s.text}</span>`}</div>${scenario && html`<button className="delx noprint" onClick=${() => gset('scenario', G.scenario.filter((_, k) => k !== i))}>×</button>`}</div>`)}</section>
+        <section className="gs"><h4><span className="gn">14</span>상담 전 최종 체크리스트</h4>
+          <ul className="g-ck">${checks.map(([k, l, hint]) => html`<li key=${k}><label><input type="checkbox" checked=${!!rec.ai.check[k]} onChange=${e => setCk(k, e.target.checked)}/><span>${l}${hint ? html` <span className="g-tag warn">${hint}</span>` : ''}</span></label></li>`)}</ul></section>
+      </${A4}>
+    </div>
+  </div>`;
+}
+
+
+/* ───────── 상담 후 결과 기록지 ───────── */
+function AfterView({ctx}) {
+  const {cur: rec, setField, updateRecord, say} = ctx;
+  if (!rec) return html`<${NeedChild} ctx=${ctx} what="결과 기록지"/>`;
+  const A = rec.after, b = rec.basic;
+  const tp = {tight: !!rec.ai.tight.after, onTight: v => setField(rec.id, ['ai', 'tight', 'after'], v)};
+  const f = (k, v) => setField(rec.id, ['after', k], v);
+  const qs = rec.questions.filter(q => has(q.q));
+  const setQa = (id, v) => setField(rec.id, ['after', 'qa', id], v);
+  const ok = rec.ai.approved.after;
+  const setOk = v => updateRecord(rec.id, r => ({...r, status: (v && r.status !== 'counseled') ? 'counseled' : r.status, ai: {...r.ai, approved: {...r.ai.approved, after: v}}}));
+  const planned = [b.date, b.time, b.method].some(has);
+  const eduPlanned = rec.ai.result && rec.ai.result.edu && has(rec.ai.result.edu.title) ? rec.ai.result.edu.title : '';
+  const cell = (v, cls = '') => has(v) ? html`<div className=${'g-p ' + cls} style=${{whiteSpace:'pre-wrap'}}>${v}</div>` : html`<div className="blank g-ph">${" "}</div>`;
+  const row = (label, body, min) => html`<div className="af-row" style=${{minHeight: min || 'auto'}}><div className="af-l">${label}</div><div className="af-v">${body}</div></div>`;
+  const qaDone = qs.filter(q => has(A.qa[q.id]));
+  const dt = A.date ? `${fmtDate(A.date)}${A.time ? ' ' + A.time : ''}` : '';
+  return html`<div className="printroot">
+    <div className="pagehead"><div className="grow"><h2>상담 후 결과 기록지 · ${displayName(rec)}</h2><p>실제 상담을 마친 뒤 작성합니다. 상담 전에 준비한 내용은 자동으로 기록되지 않아요.</p></div></div>
+    <div className="notice apricot noprint" style=${{marginBottom:'14px'}}><${Icon} n="info"/><div>이 기록지는 <b>실제로 나눈 이야기</b>만 적습니다. 준비해 둔 답변이나 시나리오는 칸에 미리 채워지지 않고, 아래 버튼을 눌렀을 때 일정과 제목만 가져옵니다.</div></div>
+    <div className="card stack noprint" style=${{marginBottom:'16px'}}>
+      <div className="row"><h3 style=${{margin:0}}>상담 기록 입력</h3>
+        ${planned && html`<button className="btn sm soft" style=${{marginLeft:'auto'}} onClick=${() => updateRecord(rec.id, r => ({...r, after: {...r.after, date: r.after.date || r.basic.date, time: r.after.time || r.basic.time, method: r.after.method || r.basic.method}}))}>예정 일정 가져오기</button>`}</div>
+      <div className="grid3">
+        <${Field} id="af-date" type="date" label="상담 일자" value=${A.date} onChange=${v => f('date', v)}/>
+        <${Field} id="af-time" type="time" label="상담 시간" value=${A.time} onChange=${v => f('time', v)}/>
+        <div className="field"><span className="lbl">상담 방법</span><div className="choice">${['전화', '방문'].map(m => html`<label key=${m}><input type="radio" name="af-method" checked=${A.method === m} onChange=${() => f('method', m)}/>${m}</label>`)}</div></div>
+      </div>
+      <${Field} id="af-content" label="실제 상담 내용" value=${A.content} onChange=${v => f('content', v)} rows=${3}/>
+      ${qs.length > 0 && html`<div className="field"><span className="lbl">부모님 질문 및 실제로 전한 답변</span><p className="hint">질문은 STEP 7에서 가져왔어요. 상담에서 실제로 나눈 답변만 적어 주세요. 비워 두면 기록지에 "논의 내용 미기록"으로 표시됩니다.</p>
+        <div className="stack" style=${{gap:'10px'}}>${qs.map((q, i) => html`<div key=${q.id} className="qcard"><b className="small">Q${i + 1}. ${q.q}</b><textarea id=${'af-qa-' + q.id} rows="2" aria-label=${'질문 ' + (i + 1) + ' 실제 답변'} value=${A.qa[q.id] || ''} placeholder="실제로 전달한 답변" onChange=${e => setQa(q.id, e.target.value)}></textarea></div>`)}</div></div>`}
+      <div className="grid2">
+        <${Field} id="af-opinion" label="부모님 의견" value=${A.opinion} onChange=${v => f('opinion', v)} rows=${3}/>
+        <${Field} id="af-guided" label="교사가 안내한 내용" value=${A.guided} onChange=${v => f('guided', v)} rows=${3}/>
+        <${Field} id="af-concern" label="양육 고민에 대해 함께 논의한 사항" value=${A.concern} onChange=${v => f('concern', v)} rows=${3}/>
+        <${Field} id="af-support" label="가정과 협의한 지원 방법" value=${A.support} onChange=${v => f('support', v)} rows=${3}/>
+      </div>
+      <div className="field"><span className="lbl">실제 제공한 부모교육자료</span>
+        <div className="choice"><label><input type="radio" name="af-edu" checked=${A.eduProvided === 'yes'} onChange=${() => f('eduProvided', 'yes')}/>제공함</label><label><input type="radio" name="af-edu" checked=${A.eduProvided === 'no'} onChange=${() => f('eduProvided', 'no')}/>제공하지 않음</label></div>
+        ${A.eduProvided === 'yes' && html`<div className="row" style=${{flexWrap:'nowrap'}}><input type="text" id="af-edu-title" placeholder="제공한 자료 제목" value=${A.eduTitle} onChange=${e => f('eduTitle', e.target.value)}/>${eduPlanned && !has(A.eduTitle) && html`<button className="btn sm" onClick=${() => f('eduTitle', eduPlanned)}>예정 제목 넣기</button>`}</div>`}</div>
+      <${Field} id="af-follow" label="추후 관찰 및 점검 사항" value=${A.followup} onChange=${v => f('followup', v)} rows=${3}/>
+      <div className="grid2"><${Field} id="af-teacher" type="text" label="상담 교사 확인(이름)" value=${A.teacherName} onChange=${v => f('teacherName', v)} placeholder=${b.teacher || '교사 이름'}/>
+        <div className="field"><span className="lbl">작성 확인</span><label className="row" style=${{gap:'8px',cursor:'pointer'}}><input type="checkbox" id="ok-after" checked=${ok} onChange=${e => setOk(e.target.checked)} style=${{accentColor:'var(--sage-deep)',width:'18px',height:'18px'}}/>실제 상담 내용을 확인했어요 <span className="muted small">(체크하면 진행 상태가 "상담 완료"로 바뀌어요)</span></label></div></div>
+      <div className="row"><button className="btn primary" disabled=${!ok} onClick=${() => printDoc('all', say)}><${Icon} n="print"/>결과 기록지 인쇄·PDF 저장</button>${inIframe && html`<span className="muted small">미리보기 창에서는 인쇄가 막혀 있어요. Chrome·Edge에서 HTML 파일을 직접 열어 주세요.</span>`}</div>
+    </div>
+    <div className="docs">
+      <${A4} label="상담 후 결과 기록지 · A4 1페이지" cls="guide after" ...${tp}>
+        <div className="g-banner"><${Icon} n="note" size=${14}/>상담 후 작성 · 기관 내부 기록 · ${termLabel(b.year, b.semester)}</div>
+        <h2 className="g-title">상담 후 결과 기록지</h2>
+        <div className="af-grid">
+          ${row('영유아', cell(displayName(rec)))}${row('반 · 담당 교사', cell([b.className, b.teacher].filter(Boolean).join(' · ')))}
+          ${row('상담 일시', cell(dt))}${row('상담 방법', cell(A.method))}
+        </div>
+        ${row('실제 상담 내용', cell(A.content), '58px')}
+        ${row('부모님 질문 및 답변 내용', qs.length ? html`<div>${qs.map((q, i) => html`<div key=${q.id} style=${{marginBottom:'3px'}}><b>Q${i + 1}. ${q.q}</b><div>${has(A.qa[q.id]) ? A.qa[q.id] : html`<span className="blank g-ph">논의 내용 미기록</span>`}</div></div>`)}</div>` : html`<span className="g-ph">부모님 질문 없음</span>`, '58px')}
+        ${row('부모님 의견', cell(A.opinion), '44px')}
+        ${row('교사가 안내한 내용', cell(A.guided), '44px')}
+        ${row('양육 고민에 대해 함께 논의한 사항', cell(A.concern), '44px')}
+        ${row('가정과 협의한 지원 방법', cell(A.support), '44px')}
+        ${row('실제 제공한 부모교육자료', cell(A.eduProvided === 'yes' ? (A.eduTitle || '제공함') : A.eduProvided === 'no' ? '제공하지 않음' : ''))}
+        ${row('추후 관찰 및 점검 사항', cell(A.followup), '44px')}
+        ${row('상담 교사 확인', html`<div className="af-sign">${A.teacherName || b.teacher || ''} <span>(서명)</span></div>`)}
+      </${A4}>
+    </div>
+  </div>`;
+}
+
+function SoonView({ctx,kind}){
+  const info={
+    report:{t:'리포트 편집',v:'2차',d:['학부모용 성장 리포트 A4 2페이지(부모교육 선택 시 3페이지) 미리보기','1페이지: 우리 아이 성장 이야기 · 대표 사진 · 어린이집에서의 하루 · 성장 · 강점','2페이지: 활동 사진 · 발달 영역별 이야기 · 안전·건강(입력 시) · 질문 답변(반영 선택 시) · 가정 연계 · 마무리 글','Claude가 작성한 결과 붙여넣기 → 영역별 자동 배치 → 문장·문단·제목 직접 수정']},
+    guide:{t:'교사용 상담 가이드',v:'2차',d:['내부 자료 표시, A4 2~3페이지','부모님 질문 전체와 질문별 전달 방식을 앞부분에 배치','설문·관찰 요약, 공통점과 차이점, 핵심 주제 3가지','15분 상담 진행 시나리오와 상담 전 체크리스트']},
+    after:{t:'상담 후 결과 기록지',v:'3차',d:['실제 상담을 마친 뒤 교사가 직접 작성 (예상 내용을 자동 기록하지 않음)','상담 일시·방법, 실제 상담 내용, 질문과 답변, 부모님 의견','협의한 지원 방법, 제공한 부모교육자료, 추후 점검 사항, 상담 교사 확인','A4 1페이지 개별 출력']},
+  }[kind];
+  return html`<div className="stack">
+    <div className="pagehead"><div className="grow"><h2>${info.t}</h2><p>이 화면은 ${info.v} 버전에서 만들어집니다. 지금 입력하는 자료는 그대로 이어서 사용됩니다.</p></div></div>
+    <div className="card"><h3>${info.v} 버전에서 추가될 기능</h3><ul className="checklist">${info.d.map((x,i)=>html`<li key=${i}><span className="ic q"><${Icon} n="leaf" size=${13}/></span><span>${x}</span></li>`)}</ul></div>
+    ${kind==='guide' && ctx.cur && html`<div className="card"><h3>미리 확인: ${displayName(ctx.cur)}의 부모님 질문</h3>${ctx.cur.questions.length? html`<ul className="checklist">${ctx.cur.questions.map((q,i)=>html`<li key=${q.id}><span className="qnum">${i+1}.</span><div><b>${q.q||'(질문 미입력)'}</b><div className="small">${has(q.a)? q.a : html`<span className="chip warn">답변 준비 필요</span>`}</div><div className="small muted">${q.mode? Q_MODES.find(m=>m[0]===q.mode)[1] : '전달 방식 미선택'}</div></div></li>`)}</ul>` : html`<p className="muted">등록된 질문이 없어요.</p>`}</div>`}
+  </div>`;
+}
+
+/* ───────── 저장 및 출력 ───────── */
+function SaveView({ctx}){
+  const {db,setDb,cur,saveNow,saveState,say,setModal,unexported,copyToNext,setView}=ctx;
+  const [scope,setScope]=useState(cur?'current':'term');
+  const [withPhotos,setWithPhotos]=useState(false);
+  const [jsonText,setJsonText]=useState('');
+  const [pasteText,setPasteText]=useState('');
+  const [mode,setMode]=useState('merge');
+  const outRef=useRef(); const fileRef=useRef();
+
+  const pick=()=> scope==='current'&&cur? [cur] : scope==='term'? termRecords({...db,session:{...db.session,onlyMine:false}}) : db.records;
+  const build=()=>{
+    const recs=pick().map(r=> withPhotos? r : {...r, photos:Object.fromEntries(['main','play'].map(s=>[s,{...r.photos[s],src:null,missing:r.photos[s].missing||!!r.photos[s].src}]))});
+    return JSON.stringify({app:APP_ID,version:1,exportedAt:nowISO(),org:ORG,scope,photosIncluded:withPhotos,teachers:db.teachers,records:recs},null,2);
+  };
+  const fname=()=>{ const d=todayStr().replace(/-/g,''); const s=scope==='current'&&cur? displayName(cur).replace(/[\\/:*?"<>|\s]/g,'') : scope==='term'? `${db.session.year}-${db.session.semester}학기` : '전체'; return `이음상담ON_${s}_${d}.json`; };
+  const markExported=()=> setDb(d=>({...d,lastExportAt:nowISO()}));
+  const doDownload=()=>{ const t=build(); setJsonText(t); if(downloadText(fname(),t)){ markExported(); say(inIframe? '파일 저장을 요청했어요. 저장되지 않았다면 아래 "JSON 복사"를 사용해 주세요.' : '파일을 내보냈어요.'); } else say('이 화면에서는 파일 저장이 막혀 있어요. "JSON 복사"를 사용해 주세요.'); };
+  const doCopy=async()=>{ const t=build(); setJsonText(t); setTimeout(async()=>{ const ok=await copyText(t,outRef.current); if(ok){ markExported(); say('JSON을 복사했어요. 메모장 등에 붙여넣어 .json 파일로 저장해 주세요.'); } else say('자동 복사가 막혀 있어요. 아래 상자의 내용이 선택되었으니 Ctrl+C로 복사해 주세요.'); },0); };
+
+  const importData=(text)=>{
+    let data; try{ data=JSON.parse(text); }catch(e){ say('JSON 형식이 올바르지 않아요. 내보낸 파일 내용을 그대로 붙여넣어 주세요.'); return; }
+    if(!data || data.app!==APP_ID || !Array.isArray(data.records)){ say('이음 상담ON에서 내보낸 파일이 아니에요.'); return; }
+    const recs=data.records.map(normalizeRecord);
+    const exist=new Map(db.records.map(r=>[r.id,r]));
+    const nNew=recs.filter(r=>!exist.has(r.id)).length; const nSame=recs.length-nNew;
+    const noPhoto=!data.photosIncluded && recs.some(r=>r.photos.main.missing||r.photos.play.missing);
+    setModal({title:'자료를 불러올까요?',confirmLabel:'불러오기',danger:mode==='replace',
+      body:html`<p>파일 속 자료 ${recs.length}건 (새 자료 ${nNew}건, 같은 자료 ${nSame}건) · 내보낸 시각 ${fmtDateTime(data.exportedAt)}</p>
+        ${mode==='merge'? html`<p>같은 자료는 <b>더 최근에 수정된 쪽</b>을 남기고, 나머지 자료는 그대로 둡니다.</p>` : html`<p style=${{color:'var(--danger)'}}><b>이 브라우저의 모든 자료를 지우고</b> 파일 내용으로 바꿉니다.</p>`}
+        ${noPhoto && html`<p className="muted">이 파일에는 사진이 포함되어 있지 않아요. 불러온 뒤 STEP 8에서 사진을 다시 첨부해 주세요.</p>`}`,
+      onConfirm:()=>{
+        setDb(d=>{
+          const teachers=[...d.teachers]; (data.teachers||[]).forEach(t=>{ if(t&&t.id&&!teachers.find(x=>x.id===t.id)) teachers.push(t); });
+          if(mode==='replace') return {...d,teachers:data.teachers||[],records:recs,lastExportAt:nowISO()};
+          const map=new Map(d.records.map(r=>[r.id,r]));
+          recs.forEach(r=>{ const o=map.get(r.id); if(!o) map.set(r.id,r); else if((r.updatedAt||'')>(o.updatedAt||'')){ const keep={...r}; ['main','play'].forEach(s=>{ if(!keep.photos[s].src && o.photos[s].src){ keep.photos[s]={...keep.photos[s],src:o.photos[s].src,missing:false}; } }); map.set(r.id,keep); } });
+          return {...d,teachers,records:[...map.values()]};
+        });
+        setPasteText(''); say('자료를 불러왔어요.');
+      }});
+  };
+  const onFile=e=>{ const f=e.target.files&&e.target.files[0]; e.target.value=''; if(!f) return; const fr=new FileReader(); fr.onload=()=>importData(String(fr.result)); fr.onerror=()=>say('파일을 읽지 못했어요.'); fr.readAsText(f,'utf-8'); };
+
+  const lsSize=(()=>{ try{ let n=0; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.startsWith('eum-sangdam-on')) n+=(localStorage.getItem(k)||'').length; } return (n*2/1024/1024).toFixed(1); }catch(e){ return '?'; } })();
+
+  return html`<div className="stack">
+    <div className="pagehead"><div className="grow"><h2>저장 및 출력</h2><p>무료 환경에서 쓸 수 있는 방식으로 자료를 저장합니다. 브라우저 임시 저장은 기기를 바꾸거나 사이트 데이터를 지우면 사라질 수 있으니, JSON 파일 백업을 꼭 함께 해 주세요.</p></div></div>
+    ${inIframe && html`<div className="notice warn"><${Icon} n="alert"/><div><b>미리보기 창에서 사용 중이에요.</b> 이 화면에서는 파일 다운로드와 인쇄가 막힐 수 있어요. 이럴 때는 "JSON 복사"로 백업하고, 인쇄가 필요하면 프로그램 HTML 파일을 Chrome이나 Edge에서 직접 열어 사용해 주세요.</div></div>`}
+
+    <div className="card">
+      <h3>브라우저 임시 저장</h3>
+      <dl className="kv"><dt>상태</dt><dd>${saveState.ok? `자동 저장 중 · 마지막 저장 ${saveState.at?fmtDateTime(saveState.at):'—'}` : html`<span style=${{color:'var(--danger)'}}>저장 실패 (저장 공간 부족 또는 브라우저 설정)</span>`}</dd>
+        <dt>사용 용량</dt><dd>약 ${lsSize}MB (브라우저 한도 보통 5MB · 사진이 대부분을 차지해요)</dd>
+        <dt>파일 백업</dt><dd>${db.lastExportAt? `마지막 내보내기 ${fmtDateTime(db.lastExportAt)}` : '아직 내보낸 적이 없어요'}${unexported>0? html` · <span style=${{color:'var(--warn)'}}>백업 이후 바뀐 자료 ${unexported}건</span>`:''}</dd></dl>
+      <div className="row" style=${{marginTop:'12px'}}><button className="btn primary" onClick=${()=>{ if(saveNow(db)) say('이 브라우저에 저장했어요.'); else say('저장에 실패했어요. JSON 파일로 내보내 주세요.'); }}><${Icon} n="save"/>지금 저장</button></div>
+    </div>
+
+    <div className="card stack">
+      <h3 style=${{marginBottom:0}}>JSON 파일로 내보내기</h3>
+      <div className="field"><span className="lbl">내보낼 범위</span><div className="choice">
+        <label><input type="radio" name="ex-scope" disabled=${!cur} checked=${scope==='current'} onChange=${()=>setScope('current')}/>현재 영유아${cur?` (${displayName(cur)})`:''}</label>
+        <label><input type="radio" name="ex-scope" checked=${scope==='term'} onChange=${()=>setScope('term')}/>${termLabel(db.session.year,db.session.semester)} 전체</label>
+        <label><input type="radio" name="ex-scope" checked=${scope==='all'} onChange=${()=>setScope('all')}/>모든 학기 (${db.records.length}건)</label></div></div>
+      <label className="row small" style=${{gap:'8px'}}><input type="checkbox" id="ex-photos" checked=${withPhotos} onChange=${e=>setWithPhotos(e.target.checked)} style=${{accentColor:'var(--sage-deep)'}}/>사진 포함 (파일이 커져요. 포함하지 않으면 불러온 뒤 사진을 다시 첨부해야 해요)</label>
+      <div className="row"><button className="btn primary" onClick=${doDownload}><${Icon} n="download"/>JSON 파일 내보내기</button><button className="btn" onClick=${doCopy}><${Icon} n="copy"/>JSON 복사</button></div>
+      ${jsonText && html`<div className="field"><label htmlFor="json-out">내보낸 내용</label><textarea id="json-out" ref=${outRef} className="code" readOnly value=${jsonText}></textarea></div>`}
+    </div>
+
+    <div className="card stack">
+      <h3 style=${{marginBottom:0}}>JSON 파일 불러오기</h3>
+      <div className="field"><span className="lbl">불러오는 방식</span><div className="choice">
+        <label><input type="radio" name="im-mode" checked=${mode==='merge'} onChange=${()=>setMode('merge')}/>기존 자료와 합치기</label>
+        <label><input type="radio" name="im-mode" checked=${mode==='replace'} onChange=${()=>setMode('replace')}/>전체 바꾸기</label></div></div>
+      <input ref=${fileRef} type="file" accept=".json,application/json" hidden onChange=${onFile} id="im-file"/>
+      <div className="row"><button className="btn primary" onClick=${()=>fileRef.current.click()}><${Icon} n="upload"/>파일 선택</button><span className="muted small">또는 아래에 내용을 붙여넣기</span></div>
+      <textarea id="im-paste" className="code" placeholder="내보낸 JSON 내용을 붙여넣어 주세요" value=${pasteText} onChange=${e=>setPasteText(e.target.value)} style=${{minHeight:'90px'}}></textarea>
+      <div><button className="btn" disabled=${!pasteText.trim()} onClick=${()=>importData(pasteText)}>붙여넣은 내용 불러오기</button></div>
+    </div>
+
+    <div className="card">
+      <h3>이전 학기 기록 복사</h3>
+      <p className="muted small" style=${{marginBottom:'10px'}}>선택한 기록의 기본정보와 "현재 모습"을 다음 학기 자료로 이어서 만듭니다. 원래 기록은 그대로 남아요.</p>
+      ${db.records.length? html`<div className="row">${db.records.slice().sort((a,b)=>(b.basic.year*10+b.basic.semester)-(a.basic.year*10+a.basic.semester)).map(r=>html`<button key=${r.id} className="btn sm" onClick=${()=>copyToNext(r)}><${Icon} n="copy" size=${14}/>${displayName(r)} · ${r.basic.year}-${r.basic.semester}학기 → 다음 학기</button>`)}</div>` : html`<p className="muted">기록이 없어요.</p>`}
+    </div>
+
+    <div className="card">
+      <h3>출력 (인쇄 · PDF 저장)</h3>
+      <div className="notice"><${Icon} n="print"/><div>문서마다 검토·승인 체크 후 인쇄할 수 있어요. 인쇄는 브라우저의 인쇄 기능(PDF로 저장)을 사용하며, 미리보기 창이 아닌 Chrome·Edge에서 HTML 파일을 직접 열었을 때 작동합니다. 인쇄 창에서 "배경 그래픽"을 켜고, 여백은 "없음", 용지는 A4로 설정해 주세요.</div></div>
+      <div className="row" style=${{marginTop:'12px'}}>
+        <button className="btn" onClick=${()=>setView('report')}>학부모용 성장 리포트</button>
+        <button className="btn" onClick=${()=>setView('report')} title="리포트 편집 화면에서 '부모교육자료만 인쇄'를 눌러요">부모교육자료만 출력</button>
+        <button className="btn" onClick=${()=>setView('guide')}>교사용 상담 가이드</button>
+        <button className="btn" onClick=${()=>setView('after')}>상담 후 결과 기록지</button></div>
+    </div>
+
+    <div className="card">
+      <h3>기능 현황 (1차 버전)</h3>
+      <div className="tablewrap"><table className="feat" style=${{minWidth:'560px'}}><thead><tr><th>기능</th><th>상태</th><th>설명</th></tr></thead><tbody>
+        ${[
+          ['영유아 등록·관리, 학기별 구분','ok','작동','학년도·학기별 목록, 진행 상태 변경, 삭제 확인'],
+          ['상담자료 입력(기본정보·관찰·안전·부모님 질문)','ok','작동','단계 이동 시 내용 유지, 단계별 작성 상태 표시'],
+          ['브라우저 임시 저장','ok','작동','입력할 때마다 자동 저장. 이 기기·이 브라우저에만 남음'],
+          ['JSON 내보내기·불러오기','ok','작동','미리보기 창에서는 "JSON 복사"와 붙여넣기 사용'],
+          ['이전 학기 기록 복사','ok','작동','기본정보와 현재 모습을 다음 학기로 이어 줌'],
+          ['교사별 자료 구분','warn','제한','나눠 보기 기능일 뿐 로그인·접근 통제·보안 기능이 아님'],
+          ['여러 교사 실시간 공유','danger','불가','무료 환경에서는 서버가 없어 지원하지 않음. JSON 파일을 주고받아 합치기로 대신함'],
+          ['Claude용 요청문 · 결과 붙여넣기','ok','작동','유료 API 없이 복사→붙여넣기. 프로그램이 Claude를 직접 호출하지는 않음'],
+          ['학부모용 성장 리포트 · 교사용 상담 가이드','ok','작동','A4 미리보기, 문장 직접 수정, 분량 초과 안내'],
+          ['인쇄·PDF 저장','warn','제한','Chrome·Edge에서 HTML 파일을 직접 열었을 때 작동. 미리보기 창에서는 막힘'],
+          ['상담 후 결과 기록지 · 부모교육자료 단독 출력 보완','warn','예정','3차 버전에서 추가'],
+        ].map(([a,s,l,d])=>html`<tr key=${a}><td>${a}</td><td><span className=${'chip '+s}>${l}</span></td><td className="small">${d}</td></tr>`)}
+      </tbody></table></div>
+    </div>
+
+    <div className="card">
+      <h3 style=${{color:'var(--danger)'}}>자료 초기화</h3>
+      <p className="muted small" style=${{marginBottom:'10px'}}>이 브라우저에 저장된 모든 상담자료와 사진을 지우고 처음 상태(예시 자료)로 되돌립니다. 먼저 JSON 파일로 백업해 두세요.</p>
+      <button className="btn danger" onClick=${()=>setModal({title:'모든 자료를 초기화할까요?',danger:true,confirmLabel:'모두 지우고 초기화',body:html`<p>영유아 ${db.records.filter(r=>!r.sample).length}명의 자료와 사진, 교사 목록이 이 브라우저에서 모두 지워집니다. 되돌릴 수 없습니다.</p>${unexported>0&&html`<p style=${{color:'var(--danger)'}}><b>파일로 백업하지 않은 변경 ${unexported}건이 있어요.</b></p>`}`,
+        onConfirm:()=>{ try{ Object.keys(localStorage).filter(k=>k.startsWith('eum-sangdam-on')).forEach(k=>localStorage.removeItem(k)); }catch(e){} Object.keys(photoSig).forEach(k=>delete photoSig[k]); const s=seedDB(); setDb(s); ctx.setCurId(null); ctx.setView('dash'); say('초기화했어요.'); }})}><${Icon} n="trash"/>전체 자료 초기화</button>
+    </div>
+  </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(html`<${App}/>`);
+})();
+</script>
