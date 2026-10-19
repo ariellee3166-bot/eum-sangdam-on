@@ -1449,7 +1449,9 @@ function buildPrompt(rec) {
 
 /* Claude 없이: 입력한 메모를 그대로 정리한 초안 (없는 내용은 만들지 않음) */
 function draftFromInput(rec) {
-  const sn = t => { t = String(t || '').trim().replace(/\s*\n+\s*/g, ' '); return !t ? '' : /[.!?]$/.test(t) ? t : t + '.'; };
+  const STEM = {'하': '해요', '되': '돼요', '보': '봐요', '가': '가요', '오': '와요', '주': '줘요', '자': '자요', '리': '려요'};
+  const soft = p => { p = p.trim(); if (!p || /[다요죠까]$/.test(p)) return p; const c = p.charCodeAt(p.length - 1) - 0xAC00; if (c < 0 || c > 11171 || c % 28 !== 16) return p; const stem = String.fromCharCode(0xAC00 + c - 16); if (STEM[stem]) return p.slice(0, -1) + STEM[stem]; if (stem === '으' && p.length > 1) { const q = p.charCodeAt(p.length - 2) - 0xAC00; if (q >= 0 && q <= 11171) { const v = Math.floor((q % 588) / 28), jong = q % 28; return p.slice(0, -1) + ((jong !== 20 && [0, 2, 8].includes(v)) ? '아요' : '어요'); } } return p; };
+  const sn = t => { t = String(t || '').trim().replace(/\s*\n+\s*/g, ' '); if (!t) return ''; const parts = t.split(/(?<=[.!?])\s*/).filter(Boolean).map(p => { const e = (p.match(/[.!?]+$/) || ['.'])[0]; return soft(p.replace(/[.!?]+$/, '')) + e; }); return parts.join(' '); };
   const join = arr => arr.map(sn).filter(Boolean).join(' ');
   const o = rec.obs, g = rec.growth, f = rec.focus, sf = rec.safety, c = rec.concern;
   const all = OBS.flatMap(d => d.items.map(([k, l]) => ({dk: d.key, l, t: o[d.key][k]}))).filter(x => has(x.t));
