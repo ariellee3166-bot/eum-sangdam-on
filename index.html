@@ -1447,6 +1447,9 @@ function extractJSON(text) {
   if (f < 0 || l <= f) return {ok: false, error: 'JSON({ })를 찾지 못했어요. Claude의 답변 전체를 그대로 붙여넣었는지 확인해 주세요.'};
   t = t.slice(f, l + 1);
   const tries = [t, t.replace(/,\s*([}\]])/g, '$1'), t.replace(/[“”]/g, '"').replace(/,\s*([}\]])/g, '$1')];
+  /* 문자열 안의 실제 줄바꿈·탭을 JSON이 읽을 수 있게 고침 */
+  const fix = x => { let o = '', q = false, e = false; for (const ch of x) { if (q) { if (e) { o += ch; e = false; } else if (ch === '\\') { o += ch; e = true; } else if (ch === '"') { o += ch; q = false; } else if (ch === '\n') o += '\\n'; else if (ch === '\r') o += ''; else if (ch === '\t') o += ' '; else o += ch; } else { if (ch === '"') q = true; o += ch; } } return o; };
+  tries.push(fix(tries[1]), fix(tries[2]));
   for (const s of tries) { try { return {ok: true, data: JSON.parse(s)}; } catch (e) { /* 다음 방법 */ } }
   return {ok: false, error: 'JSON 형식을 읽지 못했어요. 답변이 중간에 끊기지 않았는지 확인하고, 끊겼다면 Claude에 "이어서 JSON을 끝까지 출력해 주세요"라고 요청해 주세요.'};
 }
