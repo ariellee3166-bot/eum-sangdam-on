@@ -499,7 +499,7 @@ const inIframe = (()=>{ try{ return window.self!==window.top; }catch(e){ return 
 
 function emptyObs(){ const o={}; OBS.forEach(d=>{ o[d.key]={}; d.items.forEach(([k])=>o[d.key][k]=''); }); o._ep={}; OBS.forEach(d=>o._ep[d.key]=[]); return o; }
 function emptyPhoto(){ return {src:null,caption:'',fit:'contain',ratio:'orig',x:50,y:50,zoom:100,w:0,h:0,missing:false,notStored:false}; }
-function emptyAI(){ return {raw:'',result:null,appliedAt:null,approved:{report:false,guide:false,after:false},titles:{p1:'우리 아이 성장 이야기',p2:'함께 자라는 우리 아이',p3:'함께하는 부모교육'},check:{},tight:{}}; }
+function emptyAI(){ return {raw:'',result:null,appliedAt:null,approved:{report:false,guide:false,after:false},titles:{p1:'우리 아이 성장 이야기',p2:'함께 자라는 우리 아이',p2b:'함께 이어가는 성장',p3:'함께하는 부모교육'},check:{},tight:{}}; }
 function emptyAfter(){ return {date:'',time:'',method:'',content:'',qa:{},opinion:'',guided:'',concern:'',support:'',eduProvided:'',eduTitle:'',followup:'',teacherName:''}; }
 function emptyRecord(session, teachers){
   const t = teachers.find(t=>t.id===session.teacherId);
@@ -1039,9 +1039,9 @@ function SidePanel({ctx,rec,go}){
       <ul className="plist">
         <li><span className="pg">1p</span><span>우리 아이 성장 이야기 · 대표 사진 ${rec.photos.main.src?'있음':html`<span className="muted">없음(사진틀 생략)</span>`}</span></li>
         <li><span className="pg">2p</span><span>함께 자라는 우리 아이 · 활동 사진 ${rec.photos.play.src?'있음':html`<span className="muted">없음</span>`}</span></li>
-        <li><span className="pg">2p</span><span className=${safety?'':'off'}>안전하고 건강한 어린이집 생활을 위해</span>${!safety&&html`<span className="muted small">생략</span>`}</li>
-        <li><span className="pg">2p</span><span>부모님 질문 리포트 반영 ${inReport}개</span></li>
-        <li><span className="pg">3p</span><span className=${edu?'':'off'}>함께하는 부모교육</span>${!edu&&html`<span className="muted small">${rec.concern.generate==='no'?'생성 안 함':'미선택'}</span>`}</li>
+        <li><span className="pg">3p</span><span className=${safety?'':'off'}>안전하고 건강한 어린이집 생활을 위해</span>${!safety&&html`<span className="muted small">생략</span>`}</li>
+        <li><span className="pg">3p</span><span>부모님 질문 리포트 반영 ${inReport}개</span></li>
+        <li><span className="pg">4p</span><span className=${edu?'':'off'}>함께하는 부모교육</span>${!edu&&html`<span className="muted small">${rec.concern.generate==='no'?'생성 안 함':'미선택'}</span>`}</li>
       </ul>
       <div className="row" style=${{marginTop:'8px'}}><button className="btn sm soft" onClick=${()=>ctx.setView('analysis')}>Claude 요청문 만들기</button><button className="btn sm" onClick=${()=>ctx.setView('report')}>리포트 보기</button></div>
     </div>
@@ -1710,7 +1710,7 @@ function ReportView({ctx}) {
   const addEdu = () => updateRecord(rec.id, r => ({...r, ai: {...r.ai, result: {...r.ai.result, edu: {title: '', understand: '', tips: [], phrases: [], together: []}}}}));
   const ageT = ageInfo(b.birth, b.date || null);
   return html`<div className="printroot">
-    <div className="pagehead"><div className="grow"><h2>학부모용 성장 리포트 · ${displayName(rec)}</h2><p>${termLabel(b.year, b.semester)} · A4 ${showEdu ? '3' : '2'}페이지 (부모교육자료 ${showEdu ? '포함' : '제외'})</p></div>
+    <div className="pagehead"><div className="grow"><h2>학부모용 성장 리포트 · ${displayName(rec)}</h2><p>${termLabel(b.year, b.semester)} · A4 ${showEdu ? '4' : '3'}페이지 (부모교육자료 ${showEdu ? '포함' : '제외'})</p></div>
       <button className="btn" onClick=${() => ctx.setView('analysis')}>요청문·결과 붙여넣기</button></div>
     <${DocToolbar} ctx=${ctx} rec=${rec} kind="report" extra=${showEdu && E ? html`<button className="btn" disabled=${!rec.ai.approved.report} onClick=${() => printDoc('edu', say)}>부모교육자료만 인쇄</button>` : null}/>
     ${eduEdit && html`<div className="notice apricot noprint" style=${{marginBottom:'14px'}}><${Icon} n="alert"/><div style=${{flex:1}}>부모교육자료 생성을 선택했지만 Claude 결과에 내용이 없어요. 요청문을 다시 만들어 받거나 아래에서 직접 작성할 수 있어요.</div><button className="btn sm" onClick=${addEdu}>빈 부모교육자료 만들기</button></div>`}
@@ -1739,6 +1739,11 @@ function ReportView({ctx}) {
         <h4>발달 영역별 성장 이야기</h4>
         ${R.domains.map((d, i) => html`<div key=${i} className="rp-domain blk"><${Ed} tag="b" value=${d.name} ph="영역" onChange=${v => setPair('domains', i, 'name', v)}/><${Ed} cls="rp-p" value=${d.text} ph="관찰 사례" onChange=${v => setPair('domains', i, 'text', v)}/><button className="delx noprint" onClick=${() => delPair('domains', i)}>×</button></div>`)}
         <button className="addx noprint" onClick=${() => setR('domains', [...R.domains, {name: '', text: ''}])}>+ 영역 추가</button>
+      </${A4}>
+
+      <${A4} label="3페이지 · 함께 이어가는 성장" cls="rp pg-main" ...${tp}>
+        <div className="rp-top"><${PaperSprig}/><span>${ORG} · ${termLabel(b.year, b.semester)}</span></div>
+        <${Ed} tag="h2" cls="rp-title" value=${T.p2b || '함께 이어가는 성장'} onChange=${v => setT('p2b', v)}/>
         ${safe && html`<div className="rp-safe"><h4>안전하고 건강한 어린이집 생활을 위해</h4><${Ed} cls="rp-p" value=${R.safety} onChange=${v => setR('safety', v)} ph="관찰한 내용, 교사의 지원, 가정과 함께할 방법을 직접 작성해 주세요"/></div>`}
         ${repQs.length > 0 && html`<h4>부모님이 궁금해하시는 이야기</h4><div className="rp-qa">${repQs.map(q => html`<div key=${q.id}><div className="q">Q. ${q.q}</div><${Ed} cls="rp-p" value=${(q.id in R.qa) ? R.qa[q.id] : q.a} onChange=${v => setR('qa', {...R.qa, [q.id]: v})}/></div>`)}</div>`}
         <h4>가정과 함께 이어가는 성장</h4>
@@ -1746,7 +1751,7 @@ function ReportView({ctx}) {
         <div className="rp-close"><${Ed} cls="rp-p" value=${R.closing} onChange=${v => setR('closing', v)} ph="교사의 따뜻한 마무리 글"/><div className="rp-sign">${ORG} ${b.teacher || ''} 선생님 드림</div></div>
       </${A4}>
 
-      ${showEdu && E && html`<${A4} label="3페이지 · 함께하는 부모교육 (A4 한 장)" cls="rp pg-edu" ...${tp}>
+      ${showEdu && E && html`<${A4} label="4페이지 · 함께하는 부모교육 (A4 한 장)" cls="rp pg-edu" ...${tp}>
         <div className="rp-top"><${PaperSprig}/><span>${ORG} · 함께하는 부모교육</span></div>
         <${Ed} tag="h2" cls="rp-title" value=${E.title || T.p3} ph=${T.p3} onChange=${v => setE('title', v)}/>
         <h4>발달 특성 이해하기</h4>
