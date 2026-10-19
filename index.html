@@ -413,9 +413,9 @@ const SAFETY_Q = [
   ['situation','어떤 상황에서 나타났나요?','예: 자유놀이 시간, 좋아하는 자동차 놀잇감을 친구가 먼저 잡았을 때'],
   ['behavior','실제 관찰한 행동은 무엇인가요?','원인 추측이나 성격 표현 없이, 본 그대로 적어 주세요.'],
   ['frequency','빈도와 최근 변화는 어떤가요?','예: 10월 둘째 주 3회 → 넷째 주 1회'],
-  ['support','교사는 어떻게 지원하고 있나요?',''],
-  ['response','지원 이후 아이의 반응은 어떤가요?',''],
-  ['home','가정과 함께 실천하면 좋은 방법은 무엇인가요?',''],
+  ['support','교사는 어떻게 지원하고 있나요?','실제로 하고 있는 지원만 적어 주세요. 비워 두면 Claude가 어린이집 지원 방법을 "제안"으로 작성하고, 리포트에 넣기 전에 선생님이 확인해요.'],
+  ['response','지원 이후 아이의 반응은 어떤가요?','실제로 본 반응만 적어 주세요. Claude는 아이의 반응을 지어내지 않아요.'],
+  ['home','가정과 함께 실천하면 좋은 방법은 무엇인가요?','비워 두면 Claude가 가정에서 해 볼 수 있는 방법을 제안해요.'],
 ];
 
 const FOCUS = [
@@ -511,7 +511,7 @@ function emptyRecord(session, teachers){
     survey:Object.fromEntries(SURVEY.map(([k])=>[k,''])),
     obs:emptyObs(),
     growth:Object.fromEntries(GROWTH.map(([k])=>[k,''])),
-    safety:{areas:[],areaEtc:'',important:false, ...Object.fromEntries(SAFETY_Q.map(([k])=>[k,'']))},
+    safety:{areas:[],areaEtc:'',important:false,makeEdu:false, ...Object.fromEntries(SAFETY_Q.map(([k])=>[k,'']))},
     focus:Object.fromEntries(FOCUS.map(([k])=>[k,''])),
     questions:[],
     photos:{main:emptyPhoto(), play:emptyPhoto()},
@@ -568,6 +568,7 @@ function overallProgress(rec){
   req.forEach(s=>{ const p=stepProgress(rec,s.key); if(s.key==='obs') done+= Math.min(1,p.filled/8); else if(s.key==='questions') done+= p.total? p.filled/p.total : 1; else done+= p.total? p.filled/p.total : 0; });
   return Math.round(done/req.length*100);
 }
+const wantsEdu = rec => rec.concern.generate==='yes' || !!rec.safety.makeEdu;
 const safetyFilled = rec => rec.safety.areas.length>0 || SAFETY_Q.some(([k])=>has(rec.safety[k]));
 
 function cautionHits(rec){
@@ -1018,7 +1019,7 @@ function SidePanel({ctx,rec,go}){
   const qNoMode=rec.questions.filter(q=>!q.mode).length;
   const inReport=rec.questions.filter(q=>q.mode==='report'||q.mode==='both').length;
   const safety=safetyFilled(rec);
-  const edu=rec.concern.generate==='yes';
+  const edu=wantsEdu(rec);
   return html`<aside className="side" aria-label="작성 상태">
     <div className="card">
       <h4>작성 상태</h4>
@@ -1157,6 +1158,9 @@ function Step5({ctx,rec}){
         <input type="checkbox" id="sf-important" checked=${s.important} onChange=${e=>setField(rec.id,['safety','important'],e.target.checked)} style=${{accentColor:'var(--danger)'}}/>
         <span><b>안전과 관련된 중요한 관찰입니다.</b> 표시하면 상담 가이드 앞부분에 우선 표시하고, 리포트 정리 과정에서 축소하거나 빠뜨리지 않도록 안내합니다.</span></label>
     </div>
+    <div className="card stack">
+      <label className="row small" style=${{gap:'8px'}}><input type="checkbox" id="sf-makeedu" checked=${!!s.makeEdu} onChange=${e=>setField(rec.id,['safety','makeEdu'],e.target.checked)} style=${{accentColor:'var(--sage-deep)'}}/><span><b>이 내용으로 부모교육자료도 만들기</b> · 리포트 3페이지에 "함께하는 부모교육"이 추가돼요 (AI 정리 단계에서 Claude가 작성)</span></label>
+      <p className="small muted">상황·행동·빈도까지만 적고 "교사 지원"과 "가정 실천 방법"을 비워 두면, AI 정리 단계에서 Claude가 <b>제안</b>으로 작성해요. 제안은 실제로 한 일이 아니므로 리포트 편집에서 꼭 확인하고 고쳐 주세요. "AI 없이 초안 만들기"는 적은 내용만 사용해요.</p></div>
     <p className="small muted">행동의 원인을 추측하거나 아이의 성격을 단정하지 말고, 실제로 관찰한 행동과 지원 방향을 중심으로 적어 주세요.</p>
   </div>`;
 }
@@ -1379,7 +1383,7 @@ function buildPrompt(rec) {
   const photoCaps = ['main', 'play'].map(s => rec.photos[s]).filter(p => p.src && has(p.caption)).map(p => p.caption);
 
   const reportQs = qs.filter(q => (q.mode === 'report' || q.mode === 'both') && has(q.a));
-  const genEdu = rec.concern.generate === 'yes';
+  const genEdu = wantsEdu(rec);
   const out = [];
   out.push('당신은 어린이집 학부모 상담자료를 정리하는 전문 보육교사 조력자입니다.');
   out.push('아래 [입력 자료]만을 근거로 학부모용 성장 리포트, 부모교육자료, 교사용 상담 가이드의 문장을 작성해 주세요.');
@@ -1402,11 +1406,17 @@ function buildPrompt(rec) {
   out.push(safetyFilled(rec)
     ? '- 안전·건강 영역이 입력되어 있습니다. report.safety와 guide.safety를 반드시 작성하고, 입력된 행동·빈도·지원 내용을 축소하거나 누락하지 마세요.'
     : '- 안전·건강 영역은 입력이 없습니다. report.safety와 guide.safety는 빈 문자열("")로 두세요.');
+  if (safetyFilled(rec) && (!has(rec.safety.support) || !has(rec.safety.home))) {
+    out.push('- 안전·건강 영역의 ' + [!has(rec.safety.support) && '교사 지원', !has(rec.safety.home) && '가정 실천 방법'].filter(Boolean).join('과 ') + ' 칸이 비어 있습니다. 입력된 상황·행동·빈도에 맞는, 일반적으로 권장되는 방법을 "제안"으로 작성하세요.');
+    out.push('  · 어린이집 지원은 이미 하고 있는 일처럼 단정하지 말고 "~해 보려고 해요", "~를 함께 시도해 볼게요"처럼 계획으로 쓰세요. 지원 이후 아이의 반응은 입력이 없으면 절대 지어내지 마세요.');
+    out.push('  · 가정 실천 방법은 일상에서 바로 해 볼 수 있는 구체적인 방법 2~3가지로, 부모님을 평가하거나 일방적으로 요청하지 않는 표현으로 쓰세요.');
+    out.push('  · guide.safety에는 제안으로 쓴 부분에 "(제안: 교사 확인 필요)"라고 표시해 주세요. 원인 추측과 의학적·발달적 진단은 하지 마세요.');
+  }
   out.push(reportQs.length
     ? `- report.qa에는 다음 질문 id만 작성하세요: ${reportQs.map(q => q.id).join(', ')}. 교사 답변을 바탕으로 리포트 흐름에 맞게 다듬되 내용을 더하지 마세요. 그 외 질문은 qa에 넣지 마세요.`
     : '- report.qa는 빈 배열([])로 두세요.');
   out.push(genEdu
-    ? '- 부모교육자료를 생성합니다. 양육 고민과 관련 주제에 맞는 edu를 작성하세요. 의학적·발달적 진단이나 확인되지 않은 정보는 쓰지 마세요.'
+    ? '- 부모교육자료를 생성합니다. 양육 고민과 관련 주제에 맞는 edu를 작성하세요. 양육 고민 입력이 없으면 안전·건강 영역의 관찰 내용(상황·행동·빈도)을 바탕으로 작성하세요. 의학적·발달적 진단이나 확인되지 않은 정보는 쓰지 마세요.'
     : '- 부모교육자료는 생성하지 않습니다. "edu"는 null로 두세요.');
   if (photoCaps.length) out.push(`- 첨부 사진 설명(참고용): ${photoCaps.join(' / ')}`);
   out.push('- guide.topics는 정확히 3개, guide.scenario는 15분 상담 기준 5~6단계로 쓰세요.');
@@ -1427,7 +1437,7 @@ function draftFromInput(rec) {
   const domains = OBS.map(d => ({name: d.title, text: join(d.items.map(([k]) => o[d.key][k]).concat((o._ep[d.key] || []).map(e => e.behavior)))})).filter(d => has(d.text));
   const safety = safetyFilled(rec) ? join([sf.situation, sf.behavior, sf.frequency, sf.support, sf.response, sf.home]) : '';
   const home = join([c.home, sf.home, f.together]);
-  const edu = c.generate === 'yes' ? {title: c.topics[0] || '', understand: '', tips: (c.home + '\n' + c.suggest).split('\n').map(x => x.trim()).filter(Boolean), phrases: [], together: [c.suggest].filter(has)} : null;
+  const edu = wantsEdu(rec) ? {title: c.topics[0] || '', understand: '', tips: (c.home + '\n' + c.suggest).split('\n').map(x => x.trim()).filter(Boolean), phrases: [], together: [c.suggest].filter(has)} : null;
   const guide = {topics: FOCUS.map(([k, l]) => ({title: l, text: f[k]})).filter(t => has(t.text)).slice(0, 3)};
   return {report: {day, story, strengths, domains, safety, qa: [], home, closing: ''}, edu, guide};
 }
@@ -1473,7 +1483,7 @@ function aiWarnings(rec, res) {
   if (!R.story.length) w.push('"우리 아이가 이렇게 성장했어요"가 비어 있어요.');
   if (safetyFilled(rec) && !has(R.safety)) w.push('안전·건강 내용을 입력했는데 리포트의 해당 항목이 비어 있어요. 직접 작성하거나 다시 요청해 주세요.');
   if (rec.safety.important && !has(G.safety)) w.push('안전 관련 중요 관찰이 상담 가이드에 반영되지 않았어요.');
-  if (rec.concern.generate === 'yes' && !res.edu) w.push('부모교육자료를 생성하도록 선택했지만 결과에 edu가 없어요.');
+  if (wantsEdu(rec) && !res.edu) w.push('부모교육자료를 생성하도록 선택했지만 결과에 edu가 없어요.');
   const miss = rec.questions.filter(q => (q.mode === 'report' || q.mode === 'both') && has(q.a) && !has(res.report.qa[q.id]));
   if (miss.length) w.push(`리포트에 반영하기로 한 질문 ${miss.length}개는 Claude 결과에 없어서 교사 답변 원문이 그대로 들어가요. 리포트 편집에서 다듬어 주세요.`);
   if (G.topics.length && G.topics.length !== 3) w.push(`상담 핵심 주제가 ${G.topics.length}개예요(권장 3개).`);
@@ -1605,7 +1615,7 @@ function ReportView({ctx}) {
   if (!res) return html`<${NoResult} ctx=${ctx} rec=${rec} what="학부모용 성장 리포트"/>`;
   const R = res.report, E = res.edu, T = rec.ai.titles, b = rec.basic;
   const tp = {tight: !!rec.ai.tight.report, onTight: v => setField(rec.id, ['ai', 'tight', 'report'], v)};
-  const showEdu = rec.concern.generate === 'yes';
+  const showEdu = wantsEdu(rec);
   const setR = (key, v) => setField(rec.id, ['ai', 'result', 'report', key], v);
   const setE = (key, v) => setField(rec.id, ['ai', 'result', 'edu', key], v);
   const setT = (k, v) => setField(rec.id, ['ai', 'titles', k], v);
@@ -1701,7 +1711,7 @@ function GuideView({ctx}) {
   const ul = lines => lines.length ? html`<ul className="g-ul">${lines.map(([l, v], i) => html`<li key=${i}><b>${l}</b> ${v}</li>`)}</ul>` : none;
   const scenario = (G && G.scenario.length) ? G.scenario : null;
   const qNeed = qs.filter(q => !has(q.a)).length;
-  const eduTitle = rec.concern.generate === 'yes' ? ((res && res.edu && has(res.edu.title)) ? res.edu.title : '(제목 미정 · 리포트 편집에서 작성)') : rec.concern.generate === 'no' ? '제공하지 않음' : '미선택';
+  const eduTitle = wantsEdu(rec) ? ((res && res.edu && has(res.edu.title)) ? res.edu.title : '(제목 미정 · 리포트 편집에서 작성)') : rec.concern.generate === 'no' ? '제공하지 않음' : '미선택';
   const checks = [
     ['q', '부모님 질문과 답변 전달 방식을 모두 확인했다', qNeed ? `답변 준비 필요 ${qNeed}개` : ''],
     ['safe', '안전 관련 관찰을 빠뜨리지 않고 안내할 준비가 되었다', safe ? '' : '입력된 안전·건강 내용 없음'],
