@@ -1275,14 +1275,36 @@ const STEP_COMP={ai:StepAI,basic:Step1,survey:Step2,obs:Step3,growth:Step4,safet
 
 function StepAI({ctx, rec}) {
   const [open, setOpen] = useState(false);
+  const [sample, setSample] = useState(null), [busy, setBusy] = useState(false), [err, setErr] = useState('');
+  useEffect(() => {
+    let on = true;
+    try { const p = window.claude && window.claude.use && window.claude.use('sample'); if (p && p.then) p.then(x => { if (on && x) setSample(() => x); }).catch(() => {}); } catch (e) { /* Claude 안에서 열었을 때만 사용 */ }
+    return () => { on = false; };
+  }, []);
+  const runSample = async () => {
+    setBusy(true); setErr('');
+    try {
+      const r = await sample(buildPrompt(rec), {modelTier: 'default', cache: false});
+      if (r.truncated) throw new Error('답변이 중간에 끊겼어요. 다시 시도하거나 복사·붙여넣기 방식을 써 주세요.');
+      const p = extractJSON(r.text);
+      if (!p.ok) throw new Error(p.error);
+      if (!p.data.report && !p.data.guide) throw new Error('결과 형식이 달라요. 다시 시도해 주세요.');
+      const result = normalizeAI(p.data);
+      ctx.updateRecord(rec.id, x => ({...x, ai: {...x.ai, raw: r.text, result, appliedAt: nowISO(), approved: {...x.ai.approved, report: false, guide: false}}}));
+      ctx.say('Claude가 작성했어요. 문장을 확인하고 고쳐 주세요.'); ctx.setView('report');
+    } catch (e) { setErr((e && e.message) || 'Claude 호출에 실패했어요. 복사·붙여넣기 방식을 써 주세요.'); }
+    setBusy(false);
+  };
   const res = rec.ai.result; const nm = has(rec.basic.name) ? rec.basic.name : '우리 아이';
   return html`<div className="stack">
     <div className="notice sage"><${Icon} n="leaf"/><div>지금까지 입력한 관찰기록, 안전·건강 내용, 부모님 질문을 모아 학부모용 리포트와 교사용 상담 가이드 초안을 만들어요. 만든 뒤에는 자유롭게 고칠 수 있어요.</div></div>
     ${res && html`<div className="notice"><${Icon} n="check"/><div style=${{flex:1}}>이미 초안이 만들어져 있어요. (${fmtDateTime(rec.ai.appliedAt)}) 다시 만들면 직접 고친 내용이 바뀌니 주의해 주세요.</div><button className="btn sm primary" onClick=${() => ctx.setView('report')}>리포트 보기</button></div>`}
     <div className="card" style=${{display:'grid',justifyItems:'center',gap:'10px',padding:'28px 16px',textAlign:'center'}}>
-      <button className="btn primary big" onClick=${() => setOpen(!open)}>무료로 ${nm}의 상담자료 만들기 (Claude)</button>
+      ${sample && html`<button className="btn primary big" disabled=${busy} onClick=${runSample}>${busy ? 'Claude가 작성하는 중이에요…(1~2분)' : html`<${Icon} n="leaf"/>Claude로 자동 작성하기`}</button>${err && html`<div className="notice warn" style=${{textAlign:'left'}}><${Icon} n="alert"/><div>${err}</div></div>`}<p className="muted small">입력한 내용을 바탕으로 Claude가 문장을 꾸며 줘요. 이 화면에서 바로 작성됩니다.</p>`}
+      <button className=${'btn big' + (sample ? '' : ' primary')} onClick=${() => setOpen(!open)}>무료로 ${nm}의 상담자료 만들기 (Claude)</button>
       <p className="muted small">Claude.ai(무료)에 붙여넣을 내용을 만들어 드려요. 답을 받아서 다시 붙여넣으면 적용돼요.</p>
       <button className="btn big" onClick=${() => applyDraft(ctx, rec)}>AI 없이, 내가 적은 내용으로만 초안 만들기</button>
+      ${!sample && html`<p className="muted small" style=${{maxWidth:'520px'}}>이 사이트에는 AI가 연결되어 있지 않아요. 문장을 꾸미려면 위 버튼으로 만든 요청문을 Claude(claude.ai)에 붙여넣고 답을 받아 오세요. Claude 안에서 열면 "자동 작성하기" 버튼이 나타나요.</p>`}
     </div>
     ${open && html`<${AIPanel} key=${rec.id} ctx=${ctx} rec=${rec} noDraft=${true}/>`}
   </div>`;
@@ -1430,10 +1452,15 @@ function draftFromInput(rec) {
   const sn = t => { t = String(t || '').trim().replace(/\s*\n+\s*/g, ' '); return !t ? '' : /[.!?]$/.test(t) ? t : t + '.'; };
   const join = arr => arr.map(sn).filter(Boolean).join(' ');
   const o = rec.obs, g = rec.growth, f = rec.focus, sf = rec.safety, c = rec.concern;
-  const day = join([o.habit.meal, o.habit.nap, o.play.toys, o.play.often, o.play.focus, o.social.teacher, o.social.peerPlay]);
-  const story = [g.grown, g.newChange, g.now].map(sn).filter(Boolean);
-  if (!story.length && has(f.biggest)) story.push(sn(f.biggest));
-  const strengths = has(f.mustTell) ? [{title: '이런 모습이 빛나요', text: sn(f.mustTell)}] : [];
+  const all = OBS.flatMap(d => d.items.map(([k, l]) => ({dk: d.key, l, t: o[d.key][k]}))).filter(x => has(x.t));
+  const eps = OBS.flatMap(d => (o._ep[d.key] || []).map(e => [e.situation, e.behavior, e.support, e.response].filter(has).join(' '))).filter(has);
+  const dayItems = all.filter(x => x.dk === 'habit' || x.dk === 'play' || (x.dk === 'social' && x.l.includes('교사')));
+  const day = join((dayItems.length ? dayItems : all.slice(0, 3)).map(x => x.t));
+  let story = [g.grown, g.newChange, g.now, f.biggest].map(sn).filter(Boolean);
+  if (!story.length) story = eps.slice(0, 3).map(sn);
+  if (!story.length) story = all.filter(x => x.dk !== 'habit' && x.dk !== 'play').slice(0, 3).map(x => sn(x.t));
+  const strPool = all.filter(x => x.dk === 'play' || x.l.includes('또래') || x.l.includes('호기심') || x.l.includes('반복'));
+  const strengths = (has(f.mustTell) ? [{title: '이런 모습이 빛나요', text: sn(f.mustTell)}] : []).concat((strPool.length ? strPool : all.filter(x => x.dk !== 'habit')).slice(0, 3).map(x => ({title: x.l, text: sn(x.t)}))).slice(0, 3);
   const domains = OBS.map(d => ({name: d.title, text: join(d.items.map(([k]) => o[d.key][k]).concat((o._ep[d.key] || []).map(e => e.behavior)))})).filter(d => has(d.text));
   const safety = safetyFilled(rec) ? join([sf.situation, sf.behavior, sf.frequency, sf.support, sf.response, sf.home]) : '';
   const home = join([c.home, sf.home, f.together]);
