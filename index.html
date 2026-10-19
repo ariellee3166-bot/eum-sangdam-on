@@ -1935,26 +1935,7 @@ function SaveView({ctx}){
         <button className="btn" onClick=${()=>setView('after')}>상담 후 결과 기록지</button></div>
     </div>
 
-    <div className="card">
-      <h3>기능 현황 (1차 버전)</h3>
-      <div className="tablewrap"><table className="feat" style=${{minWidth:'560px'}}><thead><tr><th>기능</th><th>상태</th><th>설명</th></tr></thead><tbody>
-        ${[
-          ['영유아 등록·관리, 학기별 구분','ok','작동','학년도·학기별 목록, 진행 상태 변경, 삭제 확인'],
-          ['상담자료 입력(기본정보·관찰·안전·부모님 질문)','ok','작동','단계 이동 시 내용 유지, 단계별 작성 상태 표시'],
-          ['브라우저 임시 저장','ok','작동','입력할 때마다 자동 저장. 이 기기·이 브라우저에만 남음'],
-          ['JSON 내보내기·불러오기','ok','작동','미리보기 창에서는 "JSON 복사"와 붙여넣기 사용'],
-          ['이전 학기 기록 복사','ok','작동','기본정보와 현재 모습을 다음 학기로 이어 줌'],
-          ['교사별 자료 구분','warn','제한','나눠 보기 기능일 뿐 로그인·접근 통제·보안 기능이 아님'],
-          ['여러 교사 실시간 공유','danger','불가','무료 환경에서는 서버가 없어 지원하지 않음. JSON 파일을 주고받아 합치기로 대신함'],
-          ['Claude용 요청문 · 결과 붙여넣기','ok','작동','유료 API 없이 복사→붙여넣기. 프로그램이 Claude를 직접 호출하지는 않음'],
-          ['학부모용 성장 리포트 · 교사용 상담 가이드','ok','작동','A4 미리보기, 문장 직접 수정, 분량 초과 안내'],
-          ['인쇄·PDF 저장','warn','제한','Chrome·Edge에서 HTML 파일을 직접 열었을 때 작동. 미리보기 창에서는 막힘'],
-          ['상담 후 결과 기록지 · 부모교육자료 단독 출력 보완','warn','예정','3차 버전에서 추가'],
-        ].map(([a,s,l,d])=>html`<tr key=${a}><td>${a}</td><td><span className=${'chip '+s}>${l}</span></td><td className="small">${d}</td></tr>`)}
-      </tbody></table></div>
-    </div>
-
-    <div className="card">
+        <div className="card">
       <h3 style=${{color:'var(--danger)'}}>자료 초기화</h3>
       <p className="muted small" style=${{marginBottom:'10px'}}>이 브라우저에 저장된 모든 상담자료와 사진을 지우고 처음 상태(예시 자료)로 되돌립니다. 먼저 JSON 파일로 백업해 두세요.</p>
       <button className="btn danger" onClick=${()=>setModal({title:'모든 자료를 초기화할까요?',danger:true,confirmLabel:'모두 지우고 초기화',body:html`<p>영유아 ${db.records.filter(r=>!r.sample).length}명의 자료와 사진, 교사 목록이 이 브라우저에서 모두 지워집니다. 되돌릴 수 없습니다.</p>${unexported>0&&html`<p style=${{color:'var(--danger)'}}><b>파일로 백업하지 않은 변경 ${unexported}건이 있어요.</b></p>`}`,
